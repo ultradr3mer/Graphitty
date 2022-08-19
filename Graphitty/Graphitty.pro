@@ -1,4 +1,5 @@
-QT       += core gui
+QT       += core gui \
+            charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,12 +11,22 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
+    mainview.cpp \
+    polyeditchart.cpp \
+    polyeditchartview.cpp \
+    polyeditview.cpp \
     startview.cpp
 
 HEADERS += \
+    mainview.h \
+    polyeditchart.h \
+    polyeditchartview.h \
+    polyeditview.h \
     startview.h
 
 FORMS += \
+    mainview.ui \
+    polyeditview.ui \
     startview.ui
 
 TRANSLATIONS += \
