@@ -22,6 +22,8 @@ public:
 private slots:
   void on_newProject_clicked();
 
+  void on_openProject_clicked();
+
 private:
   Ui::StartView* ui;
 };

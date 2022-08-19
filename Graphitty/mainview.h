@@ -15,6 +15,7 @@ class MainView : public QMainWindow
 public:
   explicit MainView(QWidget* parent = nullptr);
   ~MainView();
+  void openProject(const QString& fileName);
 
 private slots:
   void on_polyEdit_clicked();

@@ -13,7 +13,12 @@ MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
 
 MainView::~MainView()
 {
-  delete ui;
+    delete ui;
+}
+
+void MainView::openProject(const QString &fileName)
+{
+
 }
 
 double produktionsFunktion(double r)
