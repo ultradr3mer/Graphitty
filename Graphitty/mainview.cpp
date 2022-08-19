@@ -4,11 +4,15 @@
 
 #include <qlineseries.h>
 #include <qvalueaxis.h>
+#include <fstream>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
 {
   ui->setupUi(this);
-  this->initializeChart();
+  this->initializeChart(7);
 }
 
 MainView::~MainView()
@@ -18,7 +22,31 @@ MainView::~MainView()
 
 void MainView::openProject(const QString &fileName)
 {
+    QString val;
+    QFile file;
 
+    file.setFileName(fileName);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    val = file.readAll();
+    file.close();
+
+    qWarning() << val;
+
+    QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
+    QJsonObject values = d.object();
+    QJsonValue value = values.value(QString("function"));
+    QJsonObject item = value.toObject();
+
+    /* in case of string value get value and convert into string*/
+    QJsonValue subobj = item["toX"];
+    qWarning() << subobj.toInt();
+
+    /* in case of array get array and convert into string*/
+    //qWarning() << tr("QJsonObject[function] of value: ") << item["content"];
+    //QJsonArray test = item["content"].toArray();
+    //qWarning() << test[1].toString();
+
+    this->initializeChart(item["fromX"].toInt(), item["toX"].toInt(), item["fromY"].toInt(), item["toY"].toInt());
 }
 
 double produktionsFunktion(double r)
@@ -26,7 +54,7 @@ double produktionsFunktion(double r)
   return 6.0 * r + 6.0 * pow(r, 2.0) - pow(r, 3.0);
 }
 
-void MainView::initializeChart()
+void MainView::initializeChart(double fromX, double toX, double fromY, double toY)
 {
   QLineSeries* produktionsWerte = new QLineSeries();
   produktionsWerte->setName("Produktionsfunktion x");
@@ -39,6 +67,7 @@ void MainView::initializeChart()
 
   double from = 0;
   double to = 7;
+
   double delta = to - from;
   int resolution = 1000;
   double stepSize = (double)delta / (double)resolution;
@@ -99,7 +128,7 @@ void MainView::initializeChart()
   chart->addSeries(durchschnittsErtrag);
 
   QValueAxis* axisX = new QValueAxis();
-  axisX->setRange(from, to);
+  axisX->setRange(fromX, toX);
   chart->addAxis(axisX, Qt::AlignBottom);
   produktionsWerte->attachAxis(axisX);
   grenzertrag->attachAxis(axisX);
@@ -107,7 +136,7 @@ void MainView::initializeChart()
   durchschnittsErtrag->attachAxis(axisX);
 
   QValueAxis* axisY = new QValueAxis();
-  axisY->setRange(0, 60);
+  axisY->setRange(fromY, toY);
   chart->addAxis(axisY, Qt::AlignLeft);
   produktionsWerte->attachAxis(axisY);
   grenzertrag->attachAxis(axisY);

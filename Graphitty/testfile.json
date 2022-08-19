@@ -1,0 +1,9 @@
+{
+    "function": {
+        "fromX": 0,
+        "toX": 5,
+        "fromY": 0,
+        "toY": 80
+    },
+    "name": "test"
+}

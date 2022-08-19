@@ -22,7 +22,7 @@ private slots:
 
 private:
   Ui::MainView* ui;
-  void initializeChart();
+  void initializeChart(double fromX = 0, double toX = 7, double fromY = 0, double toY = 60);
 };
 
 #endif // MAINVIEW_H
