@@ -4,18 +4,25 @@
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class StartView; }
+namespace Ui
+{
+class StartView;
+}
 QT_END_NAMESPACE
 
 class StartView : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    StartView(QWidget *parent = nullptr);
-    ~StartView();
+  StartView(QWidget* parent = nullptr);
+  ~StartView();
+  void newProject();
+
+private slots:
+  void on_newProject_clicked();
 
 private:
-    Ui::StartView *ui;
+  Ui::StartView* ui;
 };
 #endif // STARTVIEW_H
