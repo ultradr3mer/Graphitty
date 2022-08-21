@@ -13,14 +13,12 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainview.cpp \
-    polyeditchart.cpp \
     polyeditchartview.cpp \
     polyeditview.cpp \
     startview.cpp
 
 HEADERS += \
     mainview.h \
-    polyeditchart.h \
     polyeditchartview.h \
     polyeditview.h \
     startview.h

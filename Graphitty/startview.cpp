@@ -25,8 +25,8 @@ void StartView::on_openProject_clicked()
   auto fileName =
       QFileDialog::getOpenFileName(this, tr("Open Project"), "/home", tr("Json Files (*.json)"));
 
-  auto* mainView = new MainView(this);
-  mainView->openProject(fileName);
+  MainView mainView;
+  mainView.openProject(fileName);
   this->hide();
-  mainView->show();
+  mainView.show();
 }

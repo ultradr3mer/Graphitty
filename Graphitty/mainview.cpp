@@ -2,12 +2,12 @@
 #include "polyeditview.h"
 #include "ui_mainview.h"
 
-#include <qlineseries.h>
-#include <qvalueaxis.h>
-#include <fstream>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <fstream>
+#include <qlineseries.h>
+#include <qvalueaxis.h>
 
 MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
 {
@@ -17,36 +17,37 @@ MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
 
 MainView::~MainView()
 {
-    delete ui;
+  delete ui;
 }
 
-void MainView::openProject(const QString &fileName)
+void MainView::openProject(const QString& fileName)
 {
-    QString val;
-    QFile file;
+  QString val;
+  QFile file;
 
-    file.setFileName(fileName);
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    val = file.readAll();
-    file.close();
+  file.setFileName(fileName);
+  file.open(QIODevice::ReadOnly | QIODevice::Text);
+  val = file.readAll();
+  file.close();
 
-    qWarning() << val;
+  qWarning() << val;
 
-    QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
-    QJsonObject values = d.object();
-    QJsonValue value = values.value(QString("function"));
-    QJsonObject item = value.toObject();
+  QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
+  QJsonObject values = d.object();
+  QJsonValue value = values.value(QString("function"));
+  QJsonObject item = value.toObject();
 
-    /* in case of string value get value and convert into string*/
-    QJsonValue subobj = item["toX"];
-    qWarning() << subobj.toInt();
+  /* in case of string value get value and convert into string*/
+  QJsonValue subobj = item["toX"];
+  qWarning() << subobj.toInt();
 
-    /* in case of array get array and convert into string*/
-    //qWarning() << tr("QJsonObject[function] of value: ") << item["content"];
-    //QJsonArray test = item["content"].toArray();
-    //qWarning() << test[1].toString();
+  /* in case of array get array and convert into string*/
+  // qWarning() << tr("QJsonObject[function] of value: ") << item["content"];
+  // QJsonArray test = item["content"].toArray();
+  // qWarning() << test[1].toString();
 
-    this->initializeChart(item["fromX"].toInt(), item["toX"].toInt(), item["fromY"].toInt(), item["toY"].toInt());
+  this->initializeChart(item["fromX"].toInt(), item["toX"].toInt(), item["fromY"].toInt(),
+                        item["toY"].toInt());
 }
 
 double produktionsFunktion(double r)
@@ -72,8 +73,8 @@ void MainView::initializeChart(double fromX, double toX, double fromY, double to
   int resolution = 1000;
   double stepSize = (double)delta / (double)resolution;
 
-  double* xValues = new double[resolution];
-  double* xDerivativeValues = new double[resolution - 2];
+  double* xValues = new double[resolution + 1];
+  double* xDerivativeValues = new double[resolution - 1];
 
   double* currentXValue = xValues;
   for (int i = 0; i <= resolution; i++)

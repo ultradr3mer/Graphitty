@@ -4,6 +4,8 @@
 #ifndef CHARTVIEW_H
 #define CHARTVIEW_H
 
+#include "polyeditview.h"
+
 #include <QtCharts/QChartView>
 
 class PolyEditChart;
@@ -14,6 +16,7 @@ class PolyEditChartView : public QChartView
 {
 public:
   PolyEditChartView(QWidget* parent = 0);
+  void setView(PolyEditView* view);
 
 protected:
   void mousePressEvent(QMouseEvent* event);
@@ -21,8 +24,8 @@ protected:
   void mouseReleaseEvent(QMouseEvent* event);
 
 private:
-  PolyEditChart* m_chart;
-  QPoint m_mousePos;
+  PolyEditView* view;
+  QPoint mousePos;
 };
 
 #endif

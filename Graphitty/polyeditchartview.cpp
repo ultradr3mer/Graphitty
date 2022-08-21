@@ -2,31 +2,36 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
 #include "polyeditchartview.h"
-#include "polyeditchart.h"
+#include "polyeditview.h"
 #include <QtGui/QMouseEvent>
 
 PolyEditChartView::PolyEditChartView(QWidget* parent) : QChartView(parent)
 {
 }
 
+void PolyEditChartView::setView(PolyEditView* view)
+{
+  this->view = view;
+}
+
 void PolyEditChartView::mousePressEvent(QMouseEvent* event)
 {
-  m_mousePos = event->pos();
+  mousePos = event->pos();
   QChartView::mousePressEvent(event);
 }
 
 void PolyEditChartView::mouseMoveEvent(QMouseEvent* event)
 {
-  m_chart->handlePointMove(event->pos());
+  view->handlePointMove(event->pos());
   QChartView::mouseMoveEvent(event);
 }
 
 void PolyEditChartView::mouseReleaseEvent(QMouseEvent* event)
 {
-  if (event->pos() != m_mousePos)
+  if (event->pos() != mousePos)
   {
-    m_chart->handlePointMove(event->pos());
-    m_chart->setPointClicked(false);
+    view->handlePointMove(event->pos());
+    view->setPointClicked(false);
   }
   QChartView::mouseReleaseEvent(event);
 }
