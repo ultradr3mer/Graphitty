@@ -187,10 +187,18 @@ void PolyEditView::updatePoly()
   int resolution = 1000;
   double stepSize = (double)delta / (double)resolution;
 
+  this->ui->tableWidget->setRowCount(pointsSeries->count());
+  int row = 0;
   std::vector<std::array<double, 2>> pointsVector;
   foreach (auto point, pointsSeries->points())
   {
     pointsVector.push_back({point.x(), point.y()});
+
+    auto stringX = QString::number(point.x());
+    this->ui->tableWidget->setItem(row, 0, new QTableWidgetItem(stringX));
+    auto stringY = QString::number(point.x());
+    this->ui->tableWidget->setItem(row, 1, new QTableWidgetItem(stringY));
+    row++;
   }
 
   auto coefficients = findPolynomial(std::move(pointsVector));
