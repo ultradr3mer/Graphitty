@@ -114,6 +114,11 @@ PolyEditView::~PolyEditView()
 
 void PolyEditView::initialize()
 {
+  fromX = 0.0;
+  toX = 4.0;
+  fromY = 0.0;
+  toY = 4.0;
+
   QScatterSeries* series = new QScatterSeries();
 
   std::vector<std::array<double, 2>> points = {
@@ -136,17 +141,17 @@ void PolyEditView::initialize()
 
   QValueAxis* axisX = new QValueAxis();
   chart->addAxis(axisX, Qt::AlignBottom);
-  axisX->setRange(0, 4);
+  axisX->setRange(fromX, toX);
   series->attachAxis(axisX);
   poly->attachAxis(axisX);
 
   QValueAxis* axisY = new QValueAxis();
   chart->addAxis(axisY, Qt::AlignLeft);
-  axisY->setRange(0, 4);
+  axisY->setRange(fromY, toY);
   series->attachAxis(axisY);
   poly->attachAxis(axisY);
 
-  QObject::connect(series, &QLineSeries::pressed, this, &PolyEditView::clickPoint);
+  //  QObject::connect(series, &QLineSeries::pressed, this, &PolyEditView::clickPoint);
   this->ui->graphicsView->setRenderHint(QPainter::Antialiasing);
   this->ui->graphicsView->setChart(chart);
   this->ui->graphicsView->setView(this);
@@ -156,34 +161,75 @@ void PolyEditView::initialize()
   this->pointsSeries = series;
   this->polySeries = poly;
   this->chart = chart;
+  this->axisX = axisX;
+  this->axisY = axisY;
 }
 
-void PolyEditView::clickPoint(const QPointF& point)
-{
-  // Find the closest data point
-  movingPoint = QPoint();
-  m_clicked = false;
-  const auto points = this->pointsSeries->points();
-  for (QPointF p : points)
-  {
-    if (distance(p, point) < distance(movingPoint, point))
-    {
-      movingPoint = p;
-      m_clicked = true;
-    }
-  }
-}
+// void PolyEditView::clickPoint(const QPointF& point)
+//{
+//   // Find the closest data point
+//   movingPoint = QPointF();
+//   m_clicked = false;
+//   const auto points = this->pointsSeries->points();
+//   for (QPointF p : points)
+//   {
+//     if (distance(p, point) < distance(movingPoint, point) && distance(p, point) < 50)
+//     {
+//       movingPoint = p;
+//       m_clicked = true;
+//     }
+//   }
+// }
 
 qreal PolyEditView::distance(const QPointF& p1, const QPointF& p2)
 {
   return qSqrt((p1.x() - p2.x()) * (p1.x() - p2.x()) + (p1.y() - p2.y()) * (p1.y() - p2.y()));
 }
 
+QPointF PolyEditView::pointOnGraph(const QPoint& point)
+{
+  // Map the point clicked from the ChartView
+  // to the area occupied by the chart.
+  QPoint mappedPoint = point;
+  mappedPoint.setX(point.x() - this->chart->plotArea().x());
+  mappedPoint.setY(point.y() - this->chart->plotArea().y());
+
+  // Calculate the "unit" between points on the x
+  // y axis.
+  double xUnit = this->chart->plotArea().width() / (toX - fromX);
+  double yUnit = this->chart->plotArea().height() / (toY - fromY);
+
+  // Convert the mappedPoint to the actual chart scale.
+  double x = mappedPoint.x() / xUnit;
+  double y = toY - mappedPoint.y() / yUnit;
+
+  return QPointF(x, y);
+}
+
+QPointF PolyEditView::pointOnWidget(const QPointF& point)
+{
+  // Map the point clicked from the ChartView
+  // to the area occupied by the chart.
+  QPointF mappedPoint = point;
+  mappedPoint.setX(point.x() - fromX);
+  mappedPoint.setY(point.y() - fromY);
+
+  // Calculate the "unit" between points on the x
+  // y axis.
+  double xUnit = this->chart->plotArea().width() / (toX - fromX);
+  double yUnit = this->chart->plotArea().height() / (toY - fromY);
+
+  // Convert the mappedPoint to the actual chart scale.
+  double x = this->chart->plotArea().x() + mappedPoint.x() * xUnit;
+  double y =
+      this->chart->plotArea().y() + this->chart->plotArea().height() - mappedPoint.y() * yUnit;
+
+  return QPointF(x, y);
+}
+
 void PolyEditView::updatePoly()
 {
-  double from = 0.0;
-  double to = 4.0;
-  double delta = to - from;
+  double delta = toX - fromX;
   int resolution = 1000;
   double stepSize = (double)delta / (double)resolution;
 
@@ -203,12 +249,16 @@ void PolyEditView::updatePoly()
 
   auto coefficients = findPolynomial(std::move(pointsVector));
 
+  this->chart->removeSeries(this->polySeries);
   this->polySeries->clear();
   for (int i = 0; i <= resolution; i++)
   {
-    double r = from + stepSize * i;
+    double r = fromX + stepSize * i;
     this->polySeries->append(r, calculatePolynomial(&coefficients, r));
   }
+  this->chart->addSeries(this->polySeries);
+  this->polySeries->attachAxis(this->axisX);
+  this->polySeries->attachAxis(this->axisY);
 }
 
 void PolyEditView::setPointClicked(bool clicked)
@@ -217,6 +267,12 @@ void PolyEditView::setPointClicked(bool clicked)
 
   if (!clicked)
   {
+    if (this->movingPoint.x() < fromX || this->movingPoint.x() > toX ||
+        this->movingPoint.y() < fromY || this->movingPoint.y() > toY)
+    {
+      this->pointsSeries->remove(movingPoint);
+    }
+
     this->updatePoly();
   }
 }
@@ -227,43 +283,38 @@ void PolyEditView::handlePointMove(const QPoint& point)
   {
     return;
   }
-  // Map the point clicked from the ChartView
-  // to the area occupied by the chart.
-  QPoint mappedPoint = point;
-  mappedPoint.setX(point.x() - this->chart->plotArea().x());
-  mappedPoint.setY(point.y() - this->chart->plotArea().y());
 
-  // Get the x- and y axis to be able to convert the mapped
-  // coordinate point to the charts scale.
-  QAbstractAxis* axisx = this->chart->axes(Qt::Horizontal).first();
-  QValueAxis* haxis = 0;
-  if (axisx->type() == QAbstractAxis::AxisTypeValue)
-    haxis = qobject_cast<QValueAxis*>(axisx);
+  auto mappedPoint = this->pointOnGraph(point);
 
-  QAbstractAxis* axisy = this->chart->axes(Qt::Vertical).first();
-  QValueAxis* vaxis = 0;
-  if (axisy->type() == QAbstractAxis::AxisTypeValue)
-    vaxis = qobject_cast<QValueAxis*>(axisy);
+  pointsSeries->replace(movingPoint, mappedPoint);
 
-  if (!(haxis && vaxis))
+  movingPoint.setX(mappedPoint.x());
+  movingPoint.setY(mappedPoint.y());
+}
+
+void PolyEditView::handleMousePress(const QPoint& point)
+{
+  movingPoint = QPointF();
+  m_clicked = false;
+  const auto points = this->pointsSeries->points();
+  for (QPointF p : points)
   {
-    return;
+    auto pointOnWidget = this->pointOnWidget(p);
+    auto distanceToPoint = distance(pointOnWidget, point);
+    if (distanceToPoint < 10.0f)
+    {
+      movingPoint = p;
+      m_clicked = true;
+      return;
+    }
   }
 
-  // Calculate the "unit" between points on the x
-  // y axis.
-  double xUnit = this->chart->plotArea().width() / haxis->max();
-  double yUnit = this->chart->plotArea().height() / vaxis->max();
+  QPointF pointOnGraph = this->pointOnGraph(point);
+  this->pointsSeries->append(pointOnGraph);
+  movingPoint = point;
+  m_clicked = true;
+}
 
-  // Convert the mappedPoint to the actual chart scale.
-  double x = mappedPoint.x() / xUnit;
-  double y = vaxis->max() - mappedPoint.y() / yUnit;
-
-  // Replace the old point with the new one.
-  pointsSeries->replace(movingPoint, QPointF(x, y));
-
-  // Update the m_movingPoint so we are able to
-  // do the replace also during mousemoveEvent.
-  movingPoint.setX(x);
-  movingPoint.setY(y);
+void PolyEditView::on_udate_clicked()
+{
 }

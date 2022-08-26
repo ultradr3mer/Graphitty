@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QLineSeries>
 #include <QScatterSeries>
+#include <QValueAxis>
 
 namespace Ui
 {
@@ -17,11 +18,15 @@ class PolyEditView : public QDialog
 public:
   explicit PolyEditView(QWidget* parent = nullptr);
   void handlePointMove(const QPoint& point);
+  void handleMousePress(const QPoint& point);
   void setPointClicked(bool clicked);
   ~PolyEditView();
 
 public slots:
-  void clickPoint(const QPointF& point);
+  //  void clickPoint(const QPointF& point);
+
+private slots:
+  void on_udate_clicked();
 
 private:
   QPoint mousePos;
@@ -32,6 +37,15 @@ private:
   QLineSeries* polySeries;
   QPointF movingPoint;
   QChart* chart;
+  QValueAxis* axisX;
+  QValueAxis* axisY;
+  QPointF pointOnGraph(const QPoint& point);
+  QPointF pointOnWidget(const QPointF& point);
+
+  double fromX;
+  double toX;
+  double fromY;
+  double toY;
 
   // Boolean value to determine if an actual point in the
   // series is clicked.

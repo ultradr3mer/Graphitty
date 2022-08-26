@@ -17,6 +17,7 @@ void PolyEditChartView::setView(PolyEditView* view)
 void PolyEditChartView::mousePressEvent(QMouseEvent* event)
 {
   mousePos = event->pos();
+  view->handleMousePress(mousePos);
   QChartView::mousePressEvent(event);
 }
 
@@ -28,10 +29,8 @@ void PolyEditChartView::mouseMoveEvent(QMouseEvent* event)
 
 void PolyEditChartView::mouseReleaseEvent(QMouseEvent* event)
 {
-  if (event->pos() != mousePos)
-  {
-    view->handlePointMove(event->pos());
-    view->setPointClicked(false);
-  }
+  view->handlePointMove(event->pos());
+  view->setPointClicked(false);
+
   QChartView::mouseReleaseEvent(event);
 }
