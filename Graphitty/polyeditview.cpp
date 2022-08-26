@@ -165,22 +165,6 @@ void PolyEditView::initialize()
   this->axisY = axisY;
 }
 
-// void PolyEditView::clickPoint(const QPointF& point)
-//{
-//   // Find the closest data point
-//   movingPoint = QPointF();
-//   m_clicked = false;
-//   const auto points = this->pointsSeries->points();
-//   for (QPointF p : points)
-//   {
-//     if (distance(p, point) < distance(movingPoint, point) && distance(p, point) < 50)
-//     {
-//       movingPoint = p;
-//       m_clicked = true;
-//     }
-//   }
-// }
-
 qreal PolyEditView::distance(const QPointF& p1, const QPointF& p2)
 {
   return qSqrt((p1.x() - p2.x()) * (p1.x() - p2.x()) + (p1.y() - p2.y()) * (p1.y() - p2.y()));
@@ -188,18 +172,13 @@ qreal PolyEditView::distance(const QPointF& p1, const QPointF& p2)
 
 QPointF PolyEditView::pointOnGraph(const QPoint& point)
 {
-  // Map the point clicked from the ChartView
-  // to the area occupied by the chart.
   QPoint mappedPoint = point;
   mappedPoint.setX(point.x() - this->chart->plotArea().x());
   mappedPoint.setY(point.y() - this->chart->plotArea().y());
 
-  // Calculate the "unit" between points on the x
-  // y axis.
   double xUnit = this->chart->plotArea().width() / (toX - fromX);
   double yUnit = this->chart->plotArea().height() / (toY - fromY);
 
-  // Convert the mappedPoint to the actual chart scale.
   double x = mappedPoint.x() / xUnit;
   double y = toY - mappedPoint.y() / yUnit;
 
@@ -208,18 +187,13 @@ QPointF PolyEditView::pointOnGraph(const QPoint& point)
 
 QPointF PolyEditView::pointOnWidget(const QPointF& point)
 {
-  // Map the point clicked from the ChartView
-  // to the area occupied by the chart.
   QPointF mappedPoint = point;
   mappedPoint.setX(point.x() - fromX);
   mappedPoint.setY(point.y() - fromY);
 
-  // Calculate the "unit" between points on the x
-  // y axis.
   double xUnit = this->chart->plotArea().width() / (toX - fromX);
   double yUnit = this->chart->plotArea().height() / (toY - fromY);
 
-  // Convert the mappedPoint to the actual chart scale.
   double x = this->chart->plotArea().x() + mappedPoint.x() * xUnit;
   double y =
       this->chart->plotArea().y() + this->chart->plotArea().height() - mappedPoint.y() * yUnit;
@@ -256,6 +230,7 @@ void PolyEditView::updatePoly()
     double r = fromX + stepSize * i;
     this->polySeries->append(r, calculatePolynomial(&coefficients, r));
   }
+
   this->chart->addSeries(this->polySeries);
   this->polySeries->attachAxis(this->axisX);
   this->polySeries->attachAxis(this->axisY);
@@ -315,6 +290,57 @@ void PolyEditView::handleMousePress(const QPoint& point)
   m_clicked = true;
 }
 
-void PolyEditView::on_udate_clicked()
+void PolyEditView::on_update_clicked()
 {
+  pointsSeries->clear();
+  for (int i = 0; i < this->ui->tableWidget->rowCount(); i++)
+  {
+    auto x = this->ui->tableWidget->item(i, 0)->text().toFloat();
+    auto y = this->ui->tableWidget->item(i, 1)->text().toFloat();
+    pointsSeries->append(QPointF(x, y));
+  }
+
+  this->updatePoly();
+}
+
+void PolyEditView::on_add_clicked()
+{
+  float maxX = std::numeric_limits<float>().min();
+  float maxY = std::numeric_limits<float>().min();
+  float minX = std::numeric_limits<float>().max();
+  float minY = std::numeric_limits<float>().max();
+
+  const auto points = this->pointsSeries->points();
+  for (QPointF p : points)
+  {
+    maxX = (maxX < p.x()) ? p.x() : maxX;
+    maxY = (maxY < p.y()) ? p.y() : maxY;
+    minX = (minX > p.x()) ? p.x() : minX;
+    minY = (minY > p.y()) ? p.y() : minY;
+  }
+
+  QPointF newPoint = QPointF(maxX + (maxX - minX) / 10.0f, maxY + (maxY - minY) / 10.0f);
+  this->pointsSeries->append(newPoint);
+  this->updatePoly();
+}
+
+void PolyEditView::on_remove_clicked()
+{
+  QList<int> rowList{};
+  for (QTableWidgetItem* item : this->ui->tableWidget->selectedItems())
+  {
+    if (rowList.contains(item->row()))
+    {
+      continue;
+    }
+
+    rowList.insert(0, item->row());
+  }
+
+  for (int row : rowList)
+  {
+    this->pointsSeries->remove(row - 1);
+  }
+
+  this->updatePoly();
 }

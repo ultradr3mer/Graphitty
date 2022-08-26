@@ -26,7 +26,9 @@ public slots:
   //  void clickPoint(const QPointF& point);
 
 private slots:
-  void on_udate_clicked();
+  void on_add_clicked();
+  void on_remove_clicked();
+  void on_update_clicked();
 
 private:
   QPoint mousePos;
