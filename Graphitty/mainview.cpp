@@ -154,3 +154,15 @@ void MainView::on_polyEdit_clicked()
   auto* polyView = new PolyEditView(this);
   polyView->show();
 }
+
+void MainView::on_actionSpeichern_unter_triggered()
+{
+}
+
+void MainView::on_actionSpeichern_triggered()
+{
+}
+
+void MainView::on_actionProjektmappe_schlie_en_triggered()
+{
+}

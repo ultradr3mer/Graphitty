@@ -322,8 +322,51 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menutest">
+    <property name="title">
+     <string>Datei</string>
+    </property>
+    <addaction name="actionSpeichern"/>
+    <addaction name="actionSpeichern_unter"/>
+    <addaction name="separator"/>
+    <addaction name="actionProjektmappe_schlie_en"/>
+   </widget>
+   <widget class="QMenu" name="menuSicht">
+    <property name="title">
+     <string>Neu</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuSicht_2">
+    <property name="title">
+     <string>Sicht</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuHilfe">
+    <property name="title">
+     <string>Hilfe</string>
+    </property>
+   </widget>
+   <addaction name="menutest"/>
+   <addaction name="menuSicht"/>
+   <addaction name="menuSicht_2"/>
+   <addaction name="menuHilfe"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSpeichern">
+   <property name="text">
+    <string>Speichern</string>
+   </property>
+  </action>
+  <action name="actionSpeichern_unter">
+   <property name="text">
+    <string>Speichern unter</string>
+   </property>
+  </action>
+  <action name="actionProjektmappe_schlie_en">
+   <property name="text">
+    <string>Projektmappe schließen</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
