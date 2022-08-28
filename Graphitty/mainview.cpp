@@ -2,12 +2,17 @@
 #include "polyeditview.h"
 #include "ui_mainview.h"
 
+#include "FunctionParser/functionnode.h"
+
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <fstream>
 #include <qlineseries.h>
 #include <qvalueaxis.h>
+
+// nur zum Test
+#include <iostream>
 
 MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
 {
@@ -173,4 +178,10 @@ void MainView::on_actionSpeichern_triggered()
 
 void MainView::on_actionProjektmappe_schlie_en_triggered()
 {
+}
+
+void MainView::on_update_clicked()
+{
+  FunctionNode function = FunctionNode(ui->textEdit_5->toPlainText().toStdString());
+  ui->textEdit_5->setPlainText(QString(function.toStrnig().c_str()));
 }

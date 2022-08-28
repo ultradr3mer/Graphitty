@@ -26,6 +26,8 @@ private slots:
 
   void on_actionProjektmappe_schlie_en_triggered();
 
+  void on_update_clicked();
+
 private:
   Ui::MainView* ui;
   void initializeChart();

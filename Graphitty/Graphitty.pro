@@ -11,6 +11,11 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    FunctionParser/functionnode.cpp \
+    FunctionParser/functionparserexception.cpp \
+    FunctionParser/mathoperation.cpp \
+    FunctionParser/mathoperationexception.cpp \
+    FunctionParser/variablenotdefinedexception.cpp \
     main.cpp \
     mainview.cpp \
     polyeditchartview.cpp \
@@ -18,6 +23,11 @@ SOURCES += \
     startview.cpp
 
 HEADERS += \
+    FunctionParser/functionnode.h \
+    FunctionParser/functionparserexception.h \
+    FunctionParser/mathoperation.h \
+    FunctionParser/mathoperationexception.h \
+    FunctionParser/variablenotdefinedexception.h \
     mainview.h \
     polyeditchartview.h \
     polyeditview.h \
