@@ -41,10 +41,13 @@ private:
   FunctionNode mOtherCalculation;
   int mFromCalc = 0;
   int mToCalc = 7;
-  QLineSeries* addFunctionToChart(FunctionNode* func, QList<map<string, double>>& variables,
+  QLineSeries* addFunctionToChart(FunctionNode* func, QList<map<string, double>>& variablesList,
                                   const string& letter, const QString& name);
-  QLineSeries* addDerivationToChart(QList<map<string, double>>& variables,
+  QLineSeries* addDerivationToChart(QList<map<string, double>>& variablesList,
                                     const string& letterToDerivate, const QString& name);
+  QList<QLineSeries*>* addYThresholdToChart(QList<map<string, double>>& variablesList,
+                                            const string& letter, double threshold,
+                                            const QString& name);
   QChart* chart;
   QValueAxis* axisX;
   QValueAxis* axisY;

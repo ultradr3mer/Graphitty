@@ -66,7 +66,7 @@ void MainView::openProject(const QString& fileName)
   this->initializeChart();
 }
 
-bool tryFindIntersectionX(QPointF a, QPointF b, float threshold, float& intersectionX)
+bool tryFindIntersectionX(QPointF a, QPointF b, double threshold, double& intersectionX)
 {
   if ((a.y() > threshold) == (b.y() > threshold))
   {
@@ -103,17 +103,22 @@ void MainView::initializeChart()
   int resolution = 1000;
   double stepSize = (double)delta / (double)resolution;
 
-  QList<map<string, double>> points;
+  QList<map<string, double>> variablesList;
   for (int i = 0; i <= resolution; i++)
   {
     double r = from + stepSize * i;
-    points.append(map<string, double>{{BASE_LETTER, r}});
+    variablesList.append(map<string, double>{{BASE_LETTER, r}});
   }
 
-  this->addFunctionToChart(&mCalculation, points, "x", "Produktionsfunktion x");
-  this->addDerivationToChart(points, "x", "Grenzertrag x'");
-  this->addDerivationToChart(points, "x'", "Grenzertragszuwachs x''");
-  this->addFunctionToChart(&mOtherCalculation, points, "e", "Durschnittsertrag e");
+  this->addFunctionToChart(&mCalculation, variablesList, "x", "Produktionsfunktion x");
+  this->addDerivationToChart(variablesList, "x", "Grenzertrag x'");
+  this->addDerivationToChart(variablesList, "x'", "Grenzertragszuwachs x''");
+  this->addFunctionToChart(&mOtherCalculation, variablesList, "e", "Durschnittsertrag e");
+  this->addDerivationToChart(variablesList, "e", "e'");
+
+  this->addYThresholdToChart(variablesList, "x''", 0.0, "Übergang Phase 1 zu 2");
+  this->addYThresholdToChart(variablesList, "e'", 0.0, "Übergang Phase 2 zu 3");
+  this->addYThresholdToChart(variablesList, "x'", 0.0, "Übergang Phase 3 zu 4");
 }
 
 QLineSeries* MainView::addFunctionToChart(FunctionNode* func,
@@ -148,8 +153,10 @@ QLineSeries* MainView::addDerivationToChart(QList<map<string, double>>& variable
   QLineSeries* series = new QLineSeries();
   series->setName(name);
 
-  int length = variablesList.count();
-  for (int i = 0; i < length; i++)
+  variablesList[0][letterToDerivate + "'"] = NAN;
+
+  int length = variablesList.count() - 1;
+  for (int i = 1; i < length; i++)
   {
     auto lastVars = &variablesList[max(i - 1, 0)];
     QPointF last(lastVars->at(BASE_LETTER), lastVars->at(letterToDerivate));
@@ -157,21 +164,61 @@ QLineSeries* MainView::addDerivationToChart(QList<map<string, double>>& variable
     QPointF next(nextVars->at(BASE_LETTER), nextVars->at(letterToDerivate));
 
     double value = (next.y() - last.y()) / (next.x() - last.x());
+    auto thisVars = &variablesList[i];
+    thisVars->insert_or_assign(letterToDerivate + "'", value);
+
     if (value == NAN)
     {
       continue;
     }
 
-    auto thisVars = &variablesList[i];
-    thisVars->insert_or_assign(letterToDerivate + "'", value);
     series->append(thisVars->at(BASE_LETTER), value);
   }
+
+  variablesList[length][letterToDerivate + "'"] = NAN;
 
   this->chart->addSeries(series);
   series->attachAxis(this->axisX);
   series->attachAxis(this->axisY);
 
   return series;
+}
+
+QList<QLineSeries*>* MainView::addYThresholdToChart(QList<map<string, double>>& variablesList,
+                                                    const string& letter, double threshold,
+                                                    const QString& name)
+{
+  auto listOfSeries = new QList<QLineSeries*>{};
+
+  int length = variablesList.count() - 1;
+  for (int i = 0; i < length; i++)
+  {
+    QLineSeries* series = new QLineSeries();
+    series->setName(name);
+    series->setPen(Qt::DashLine);
+
+    auto lastVars = &variablesList[i];
+    QPointF last(lastVars->at(BASE_LETTER), lastVars->at(letter));
+    auto nextVars = &variablesList[i + 1];
+    QPointF next(nextVars->at(BASE_LETTER), nextVars->at(letter));
+
+    double intersectionX;
+    if (!tryFindIntersectionX(last, next, threshold, intersectionX))
+    {
+      continue;
+    }
+
+    series->append(intersectionX, this->mFromY);
+    series->append(intersectionX, this->mToY);
+
+    this->chart->addSeries(series);
+    series->attachAxis(this->axisX);
+    series->attachAxis(this->axisY);
+
+    listOfSeries->append(series);
+  }
+
+  return listOfSeries;
 }
 
 void MainView::on_polyEdit_clicked()
