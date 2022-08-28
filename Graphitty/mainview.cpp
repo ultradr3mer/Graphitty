@@ -13,11 +13,14 @@
 #include <qlineseries.h>
 #include <qvalueaxis.h>
 
+string BASE_LETTER = "r";
+
 MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
 {
   ui->setupUi(this);
 
   this->mCalculation = FunctionNode("6(r+r^2)-r^3");
+  this->mOtherCalculation = FunctionNode("x/r");
   this->initializeChart();
 }
 
@@ -63,15 +66,15 @@ void MainView::openProject(const QString& fileName)
   this->initializeChart();
 }
 
-bool tryFindIntersection(QPointF a, QPointF b, float threshold, QPointF& pointOfIntersection)
+bool tryFindIntersectionX(QPointF a, QPointF b, float threshold, float& intersectionX)
 {
-  if ((a.y() > 0) == (b.y() > 0))
+  if ((a.y() > threshold) == (b.y() > threshold))
   {
     return false;
   }
 
   float lambda = (threshold - b.y()) / (a.y() - b.y());
-  pointOfIntersection = lambda * a + (1 - lambda) * b;
+  intersectionX = (lambda * a + (1 - lambda) * b).x();
 
   return true;
 }
@@ -93,31 +96,43 @@ void MainView::initializeChart()
   this->ui->chartView->setChart(chart);
   this->chart = chart;
 
-  auto prodSeries = this->addFunctionToChart(&mCalculation, "Produktionsfunktion x");
-  auto grenzSeries = this->addDerivationToChart(prodSeries, "Grenzertrag x'");
-  this->addDerivationToChart(grenzSeries, "Grenzertragszuwachs x''");
-}
-
-QLineSeries* MainView::addFunctionToChart(FunctionNode* func, const QString& name)
-{
-  QLineSeries* series = new QLineSeries();
-  series->setName(name);
-
   double from = mFromCalc;
   double to = mToCalc;
 
   double delta = to - from;
   int resolution = 1000;
   double stepSize = (double)delta / (double)resolution;
-  double* xValues = new double[resolution + 1];
-  double* currentXValue = xValues;
+
+  QList<map<string, double>> points;
   for (int i = 0; i <= resolution; i++)
   {
     double r = from + stepSize * i;
-    double x = func->getResult(r);
-    series->append(r, x);
-    *currentXValue = x;
-    currentXValue++;
+    points.append(map<string, double>{{BASE_LETTER, r}});
+  }
+
+  this->addFunctionToChart(&mCalculation, points, "x", "Produktionsfunktion x");
+  this->addDerivationToChart(points, "x", "Grenzertrag x'");
+  this->addDerivationToChart(points, "x'", "Grenzertragszuwachs x''");
+  this->addFunctionToChart(&mOtherCalculation, points, "e", "Durschnittsertrag e");
+}
+
+QLineSeries* MainView::addFunctionToChart(FunctionNode* func,
+                                          QList<map<string, double>>& variablesList,
+                                          const string& letter, const QString& name)
+{
+  QLineSeries* series = new QLineSeries();
+  series->setName(name);
+
+  for (map<string, double>& singleVariables : variablesList)
+  {
+    double value = func->getResult(singleVariables);
+    singleVariables.insert_or_assign(letter, value);
+    if (value == NAN)
+    {
+      continue;
+    }
+
+    series->append(singleVariables.at(BASE_LETTER), value);
   }
 
   this->chart->addSeries(series);
@@ -127,27 +142,36 @@ QLineSeries* MainView::addFunctionToChart(FunctionNode* func, const QString& nam
   return series;
 }
 
-QLineSeries* MainView::addDerivationToChart(QLineSeries* series, const QString& name)
+QLineSeries* MainView::addDerivationToChart(QList<map<string, double>>& variablesList,
+                                            const string& letterToDerivate, const QString& name)
 {
-  QLineSeries* derivation = new QLineSeries();
-  derivation->setName(name);
+  QLineSeries* series = new QLineSeries();
+  series->setName(name);
 
-  for (int i = 0; i < (series->count() - 1); i++)
+  int length = variablesList.count();
+  for (int i = 0; i < length; i++)
   {
-    QPointF last = series->at(i);
-    QPointF next = series->at(i + 1);
+    auto lastVars = &variablesList[max(i - 1, 0)];
+    QPointF last(lastVars->at(BASE_LETTER), lastVars->at(letterToDerivate));
+    auto nextVars = &variablesList[min(i + 1, length - 1)];
+    QPointF next(nextVars->at(BASE_LETTER), nextVars->at(letterToDerivate));
 
-    double x = (last.x() + next.x()) / 2.0;
-    double y = (next.y() - last.y()) / (next.x() - last.x());
+    double value = (next.y() - last.y()) / (next.x() - last.x());
+    if (value == NAN)
+    {
+      continue;
+    }
 
-    derivation->append(x, y);
+    auto thisVars = &variablesList[i];
+    thisVars->insert_or_assign(letterToDerivate + "'", value);
+    series->append(thisVars->at(BASE_LETTER), value);
   }
 
-  this->chart->addSeries(derivation);
-  derivation->attachAxis(this->axisX);
-  derivation->attachAxis(this->axisY);
+  this->chart->addSeries(series);
+  series->attachAxis(this->axisX);
+  series->attachAxis(this->axisY);
 
-  return derivation;
+  return series;
 }
 
 void MainView::on_polyEdit_clicked()

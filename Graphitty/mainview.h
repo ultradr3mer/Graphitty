@@ -38,10 +38,13 @@ private:
   int mFromY = 0;
   int mToY = 60;
   FunctionNode mCalculation;
+  FunctionNode mOtherCalculation;
   int mFromCalc = 0;
   int mToCalc = 7;
-  QLineSeries* addFunctionToChart(FunctionNode* func, const QString& name);
-  QLineSeries* addDerivationToChart(QLineSeries* series, const QString& name);
+  QLineSeries* addFunctionToChart(FunctionNode* func, QList<map<string, double>>& variables,
+                                  const string& letter, const QString& name);
+  QLineSeries* addDerivationToChart(QList<map<string, double>>& variables,
+                                    const string& letterToDerivate, const QString& name);
   QChart* chart;
   QValueAxis* axisX;
   QValueAxis* axisY;
