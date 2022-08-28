@@ -14,7 +14,7 @@ public:
   }
   inline VariableNotDefinedException(string var)
   {
-    message = string("The variable '") + var + string("' is not defined.");
+    message = string("The variable '") + var + string("' is not a defined variable.");
   }
 };
 

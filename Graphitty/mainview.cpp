@@ -7,16 +7,16 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMessageBox>
 #include <fstream>
 #include <qlineseries.h>
 #include <qvalueaxis.h>
 
-// nur zum Test
-#include <iostream>
-
 MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
 {
   ui->setupUi(this);
+
+  this->mCalculation = FunctionNode("6(r+r^2)-r^3");
   this->initializeChart();
 }
 
@@ -48,7 +48,7 @@ void MainView::openProject(const QString& fileName)
   mFromY = item["fromY"].toInt();
   mToY = item["toY"].toInt();
 
-  mCalculation = item["calculation"].toString();
+  mCalculation = FunctionNode(item["calculation"].toString().toStdString());
   mFromCalc = item["fromCalc"].toInt();
   mToCalc = item["toCalc"].toInt();
 
@@ -62,10 +62,11 @@ void MainView::openProject(const QString& fileName)
   this->initializeChart();
 }
 
-double produktionsFunktion(double r) // QString mCalculation
+double MainView::produktionsFunktion(double r) // QString mCalculation
 {
   // ToDo QString input into CalcNode return
-  return 6.0 * r + 6.0 * pow(r, 2.0) - pow(r, 3.0);
+  // return 6.0 * r + 6.0 * pow(r, 2.0) - pow(r, 3.0);
+  return mCalculation.getResult(r);
 }
 
 void MainView::initializeChart()
@@ -182,6 +183,16 @@ void MainView::on_actionProjektmappe_schlie_en_triggered()
 
 void MainView::on_update_clicked()
 {
-  FunctionNode function = FunctionNode(ui->textEdit_5->toPlainText().toStdString());
-  ui->textEdit_5->setPlainText(QString(function.toStrnig().c_str()));
+  try
+  {
+    mCalculation = FunctionNode(ui->lineEditFunction->text().toStdString());
+    ui->lineEditFunction->setText(QString(mCalculation.toStrnig().c_str()));
+    initializeChart();
+  }
+  catch (FunctionParserException e)
+  {
+    // ui->textEdit->setPlainText(e.getMessage().c_str());
+    QMessageBox::information(this, "The function contains an error.", e.getMessage().c_str(),
+                             QMessageBox::Ok);
+  }
 }

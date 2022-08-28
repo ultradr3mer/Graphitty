@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "FunctionParser/functionnode.h"
+
 namespace Ui
 {
 class MainView;
@@ -36,9 +38,11 @@ private:
   int mToX = 7;
   int mFromY = 0;
   int mToY = 60;
-  QString mCalculation;
+  FunctionNode mCalculation;
   int mFromCalc = 0;
   int mToCalc = 7;
+
+  double produktionsFunktion(double r);
 };
 
 #endif // MAINVIEW_H

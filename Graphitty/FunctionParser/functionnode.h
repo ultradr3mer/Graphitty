@@ -33,8 +33,11 @@ private:
 
 public:
   FunctionNode();
+  FunctionNode(const FunctionNode& obj);
   FunctionNode(string expression);
   ~FunctionNode();
+  FunctionNode& operator=(FunctionNode obj);
+  double getResult(double r);
   double getResult(map<string, double>);
   string toStrnig();
 };

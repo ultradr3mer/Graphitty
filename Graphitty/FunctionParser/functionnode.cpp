@@ -11,6 +11,17 @@ FunctionNode::FunctionNode()
   cout << "Test" << endl;
 }
 
+FunctionNode::FunctionNode(const FunctionNode& obj)
+    : expr(""), operand1(NULL), operation(obj.operation), operand2(NULL),
+      inBrackets(obj.inBrackets), varName(obj.varName), value(obj.value)
+{
+  if (obj.operand1 && obj.operand2)
+  {
+    operand1 = new FunctionNode(*obj.operand1);
+    operand2 = new FunctionNode(*obj.operand2);
+  }
+}
+
 FunctionNode::FunctionNode(string expression)
     : expr(expression), operand1(NULL), operand2(NULL), inBrackets(false), varName(""), value(0.0)
 {
@@ -46,6 +57,40 @@ FunctionNode::~FunctionNode()
   {
     delete operand2;
   }
+}
+
+FunctionNode& FunctionNode::operator=(FunctionNode obj)
+{
+  if (&obj != this)
+  {
+    if (operand1)
+    {
+      delete operand1;
+    }
+    if (operand2)
+    {
+      delete operand2;
+    }
+
+    operation = obj.operation;
+    inBrackets = obj.inBrackets;
+    varName = obj.varName;
+    value = obj.value;
+
+    if (obj.operand1 && obj.operand2)
+    {
+      operand1 = new FunctionNode(*obj.operand1);
+      operand2 = new FunctionNode(*obj.operand2);
+    }
+  }
+  return *this;
+}
+
+double FunctionNode::getResult(double r)
+{
+  map<string, double> var;
+  var.insert_or_assign("r", r);
+  return getResult(var);
 }
 
 double FunctionNode::getResult(map<string, double> vars)

@@ -54,23 +54,6 @@
        <string>Edit Function</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="2" column="0" colspan="2">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Function</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QTextEdit" name="textEdit_5">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>26</height>
-          </size>
-         </property>
-        </widget>
-       </item>
        <item row="6" column="0" colspan="2">
         <widget class="QPushButton" name="update">
          <property name="text">
@@ -82,6 +65,13 @@
         <widget class="QPushButton" name="polyEdit">
          <property name="text">
           <string>Open Poly</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Function</string>
          </property>
         </widget>
        </item>
@@ -114,6 +104,13 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLineEdit" name="lineEditFunction">
+         <property name="placeholderText">
+          <string>6*(r+r^2)-r^3</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
