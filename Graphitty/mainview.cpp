@@ -12,7 +12,7 @@
 MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
 {
   ui->setupUi(this);
-  this->initializeChart(7);
+  this->initializeChart();
 }
 
 MainView::~MainView()
@@ -38,24 +38,32 @@ void MainView::openProject(const QString& fileName)
   QJsonObject item = value.toObject();
 
   /* in case of string value get value and convert into string*/
-  QJsonValue subobj = item["toX"];
-  qWarning() << subobj.toInt();
+  mFromX = item["fromX"].toInt();
+  mToX = item["toX"].toInt();
+  mFromY = item["fromY"].toInt();
+  mToY = item["toY"].toInt();
+
+  mCalculation = item["calculation"].toString();
+  mFromCalc = item["fromCalc"].toInt();
+  mToCalc = item["toCalc"].toInt();
+
+  mImported = true;
 
   /* in case of array get array and convert into string*/
   // qWarning() << tr("QJsonObject[function] of value: ") << item["content"];
   // QJsonArray test = item["content"].toArray();
   // qWarning() << test[1].toString();
 
-  this->initializeChart(item["fromX"].toInt(), item["toX"].toInt(), item["fromY"].toInt(),
-                        item["toY"].toInt());
+  this->initializeChart();
 }
 
-double produktionsFunktion(double r)
+double produktionsFunktion(double r) // QString mCalculation
 {
+  // ToDo QString input into CalcNode return
   return 6.0 * r + 6.0 * pow(r, 2.0) - pow(r, 3.0);
 }
 
-void MainView::initializeChart(double fromX, double toX, double fromY, double toY)
+void MainView::initializeChart()
 {
   QLineSeries* produktionsWerte = new QLineSeries();
   produktionsWerte->setName("Produktionsfunktion x");
@@ -66,8 +74,8 @@ void MainView::initializeChart(double fromX, double toX, double fromY, double to
   QLineSeries* durchschnittsErtrag = new QLineSeries();
   durchschnittsErtrag->setName("Durschnittsertrag e");
 
-  double from = 0;
-  double to = 7;
+  double from = mFromCalc;
+  double to = mToCalc;
 
   double delta = to - from;
   int resolution = 1000;
@@ -129,7 +137,7 @@ void MainView::initializeChart(double fromX, double toX, double fromY, double to
   chart->addSeries(durchschnittsErtrag);
 
   QValueAxis* axisX = new QValueAxis();
-  axisX->setRange(fromX, toX);
+  axisX->setRange(mFromX, mToX);
   chart->addAxis(axisX, Qt::AlignBottom);
   produktionsWerte->attachAxis(axisX);
   grenzertrag->attachAxis(axisX);
@@ -137,7 +145,7 @@ void MainView::initializeChart(double fromX, double toX, double fromY, double to
   durchschnittsErtrag->attachAxis(axisX);
 
   QValueAxis* axisY = new QValueAxis();
-  axisY->setRange(fromY, toY);
+  axisY->setRange(mFromY, mToY);
   chart->addAxis(axisY, Qt::AlignLeft);
   produktionsWerte->attachAxis(axisY);
   grenzertrag->attachAxis(axisY);

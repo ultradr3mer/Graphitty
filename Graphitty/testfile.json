@@ -1,9 +1,12 @@
 {
     "function": {
         "fromX": 0,
-        "toX": 5,
+        "toX": 10,
         "fromY": 0,
-        "toY": 80
+        "toY": 80,
+        "calculation": "",
+        "fromCalc": 0,
+        "toCalc": 10
     },
     "name": "test"
 }
