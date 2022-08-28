@@ -8,6 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox>
+#include <QPointF>
 #include <fstream>
 #include <qlineseries.h>
 #include <qvalueaxis.h>
@@ -62,23 +63,45 @@ void MainView::openProject(const QString& fileName)
   this->initializeChart();
 }
 
-double MainView::produktionsFunktion(double r) // QString mCalculation
+bool tryFindIntersection(QPointF a, QPointF b, float threshold, QPointF& pointOfIntersection)
 {
-  // ToDo QString input into CalcNode return
-  // return 6.0 * r + 6.0 * pow(r, 2.0) - pow(r, 3.0);
-  return mCalculation.getResult(r);
+  if ((a.y() > 0) == (b.y() > 0))
+  {
+    return false;
+  }
+
+  float lambda = (threshold - b.y()) / (a.y() - b.y());
+  pointOfIntersection = lambda * a + (1 - lambda) * b;
+
+  return true;
 }
 
 void MainView::initializeChart()
 {
-  QLineSeries* produktionsWerte = new QLineSeries();
-  produktionsWerte->setName("Produktionsfunktion x");
-  QLineSeries* grenzertrag = new QLineSeries();
-  grenzertrag->setName("Grenzertrag x'");
-  QLineSeries* grenzertragZuwachs = new QLineSeries();
-  grenzertragZuwachs->setName("Grenzertragszuwachs x''");
-  QLineSeries* durchschnittsErtrag = new QLineSeries();
-  durchschnittsErtrag->setName("Durschnittsertrag e");
+  QChart* chart = new QChart();
+
+  QValueAxis* axisX = new QValueAxis();
+  axisX->setRange(mFromX, mToX);
+  chart->addAxis(axisX, Qt::AlignBottom);
+  this->axisX = axisX;
+
+  QValueAxis* axisY = new QValueAxis();
+  axisY->setRange(mFromY, mToY);
+  chart->addAxis(axisY, Qt::AlignLeft);
+  this->axisY = axisY;
+
+  this->ui->chartView->setChart(chart);
+  this->chart = chart;
+
+  auto prodSeries = this->addFunctionToChart(&mCalculation, "Produktionsfunktion x");
+  auto grenzSeries = this->addDerivationToChart(prodSeries, "Grenzertrag x'");
+  this->addDerivationToChart(grenzSeries, "Grenzertragszuwachs x''");
+}
+
+QLineSeries* MainView::addFunctionToChart(FunctionNode* func, const QString& name)
+{
+  QLineSeries* series = new QLineSeries();
+  series->setName(name);
 
   double from = mFromCalc;
   double to = mToCalc;
@@ -86,81 +109,45 @@ void MainView::initializeChart()
   double delta = to - from;
   int resolution = 1000;
   double stepSize = (double)delta / (double)resolution;
-
   double* xValues = new double[resolution + 1];
-  double* xDerivativeValues = new double[resolution - 1];
-
   double* currentXValue = xValues;
   for (int i = 0; i <= resolution; i++)
   {
     double r = from + stepSize * i;
-    double x = produktionsFunktion(r);
-    produktionsWerte->append(r, x);
-    double e = x / r;
-    durchschnittsErtrag->append(r, e);
-
+    double x = func->getResult(r);
+    series->append(r, x);
     *currentXValue = x;
     currentXValue++;
   }
 
-  double* currentValue = xValues + 1;
-  double* currentXDerivativeValue = xDerivativeValues;
-  for (int i = 1; i <= (resolution - 1); i++)
+  this->chart->addSeries(series);
+  series->attachAxis(this->axisX);
+  series->attachAxis(this->axisY);
+
+  return series;
+}
+
+QLineSeries* MainView::addDerivationToChart(QLineSeries* series, const QString& name)
+{
+  QLineSeries* derivation = new QLineSeries();
+  derivation->setName(name);
+
+  for (int i = 0; i < (series->count() - 1); i++)
   {
-    double r = from + stepSize * i;
+    QPointF last = series->at(i);
+    QPointF next = series->at(i + 1);
 
-    double lastX = *(currentValue - 1);
-    double nextX = *(currentValue + 1);
-    double xDerivative = (nextX - lastX) / stepSize / 2.0;
-    grenzertrag->append(r, xDerivative);
+    double x = (last.x() + next.x()) / 2.0;
+    double y = (next.y() - last.y()) / (next.x() - last.x());
 
-    *currentXDerivativeValue = xDerivative;
-
-    currentValue++;
-    currentXDerivativeValue++;
+    derivation->append(x, y);
   }
 
-  currentXDerivativeValue = xDerivativeValues + 1;
-  for (int i = 2; i <= (resolution - 2); i++)
-  {
-    double r = from + stepSize * i;
+  this->chart->addSeries(derivation);
+  derivation->attachAxis(this->axisX);
+  derivation->attachAxis(this->axisY);
 
-    double lastXDreivative = *(currentXDerivativeValue - 1);
-    double nextXDerivative = *(currentXDerivativeValue + 1);
-    double xDerivativeTwo = (nextXDerivative - lastXDreivative) / stepSize / 2.0;
-    grenzertragZuwachs->append(r, xDerivativeTwo);
-    currentXDerivativeValue++;
-  }
-
-  delete[] xValues;
-  delete[] xDerivativeValues;
-
-  QChart* chart = new QChart();
-  //    chart->legend()->hide();
-  chart->addSeries(produktionsWerte);
-  chart->addSeries(grenzertrag);
-  chart->addSeries(grenzertragZuwachs);
-  chart->addSeries(durchschnittsErtrag);
-
-  QValueAxis* axisX = new QValueAxis();
-  axisX->setRange(mFromX, mToX);
-  chart->addAxis(axisX, Qt::AlignBottom);
-  produktionsWerte->attachAxis(axisX);
-  grenzertrag->attachAxis(axisX);
-  grenzertragZuwachs->attachAxis(axisX);
-  durchschnittsErtrag->attachAxis(axisX);
-
-  QValueAxis* axisY = new QValueAxis();
-  axisY->setRange(mFromY, mToY);
-  chart->addAxis(axisY, Qt::AlignLeft);
-  produktionsWerte->attachAxis(axisY);
-  grenzertrag->attachAxis(axisY);
-  grenzertragZuwachs->attachAxis(axisY);
-  durchschnittsErtrag->attachAxis(axisY);
-
-  chart->setTitle("Simple line chart example");
-
-  this->ui->chartView->setChart(chart);
+  return derivation;
 }
 
 void MainView::on_polyEdit_clicked()

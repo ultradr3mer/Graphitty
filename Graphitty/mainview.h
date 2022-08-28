@@ -1,7 +1,10 @@
 #ifndef MAINVIEW_H
 #define MAINVIEW_H
 
+#include <QChart>
+#include <QLineSeries>
 #include <QMainWindow>
+#include <QValueAxis>
 
 #include "FunctionParser/functionnode.h"
 
@@ -21,13 +24,9 @@ public:
 
 private slots:
   void on_polyEdit_clicked();
-
   void on_actionSpeichern_unter_triggered();
-
   void on_actionSpeichern_triggered();
-
   void on_actionProjektmappe_schlie_en_triggered();
-
   void on_update_clicked();
 
 private:
@@ -41,8 +40,11 @@ private:
   FunctionNode mCalculation;
   int mFromCalc = 0;
   int mToCalc = 7;
-
-  double produktionsFunktion(double r);
+  QLineSeries* addFunctionToChart(FunctionNode* func, const QString& name);
+  QLineSeries* addDerivationToChart(QLineSeries* series, const QString& name);
+  QChart* chart;
+  QValueAxis* axisX;
+  QValueAxis* axisY;
 };
 
 #endif // MAINVIEW_H
