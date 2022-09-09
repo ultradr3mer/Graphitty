@@ -140,7 +140,7 @@
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+       <widget class="QDoubleSpinBox" name="toX">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -150,7 +150,7 @@
        </widget>
       </item>
       <item row="2" column="3">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+       <widget class="QDoubleSpinBox" name="toY">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -160,7 +160,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox">
+       <widget class="QDoubleSpinBox" name="fromX">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -184,7 +184,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+       <widget class="QDoubleSpinBox" name="fromY">
         <property name="minimumSize">
          <size>
           <width>100</width>

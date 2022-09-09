@@ -40,6 +40,7 @@ public:
   }
 
   bool isInside(QPointF point);
+  QPointF mapPointToView(QPointF relativePoint);
 
 private:
   double mFromX;

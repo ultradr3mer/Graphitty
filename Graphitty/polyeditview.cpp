@@ -1,6 +1,7 @@
 #include "polyeditview.h"
 #include "mainview.h"
 #include "ui_polyeditview.h"
+#include <QPointF>
 #include <QtCharts/QAbstractAxis>
 #include <QtCharts/QValueAxis>
 #include <QtCore/QtMath>
@@ -141,11 +142,11 @@ void PolyEditView::initializeChart()
 {
   QScatterSeries* series = new QScatterSeries();
 
-  std::vector<std::array<double, 2>> points = {
-      {0.0, 0.0}, {1.0, 1.0}, {2.0, 3.0}, {3.0, 3.0}, {4.0, 3.0}};
+  QList<QPointF> points = {this->viewArea.mapPointToView(QPointF(0.25f, 0.25f)),
+                           this->viewArea.mapPointToView(QPointF(0.75f, 0.75f))};
   for (auto point : points)
   {
-    series->append(point[0], point[1]);
+    series->append(point.x(), point.y());
   }
 
   QLineSeries* poly = new QLineSeries();
@@ -277,6 +278,10 @@ void PolyEditView::setPointClicked(bool clicked)
 void PolyEditView::initialize(const ViewArea& viewArea)
 {
   this->viewArea = viewArea;
+  this->ui->fromX->setValue(this->viewArea.getFromX());
+  this->ui->toX->setValue(this->viewArea.getToX());
+  this->ui->toY->setValue(this->viewArea.getFromY());
+  this->ui->toY->setValue(this->viewArea.getToY());
 
   this->initializeChart();
   this->updatePoly();

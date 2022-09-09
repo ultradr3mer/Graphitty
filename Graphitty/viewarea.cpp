@@ -14,3 +14,8 @@ bool ViewArea::isInside(QPointF point)
   return (point.x() >= this->getFromX() && point.x() <= this->getToX()) &&
          point.y() >= this->getFromY() && point.y() <= this->getToY();
 }
+
+QPointF ViewArea::mapPointToView(QPointF relativePoint)
+{
+  return QPointF(mFromX + getWidth() * relativePoint.x(), mFromY + getHeight() * relativePoint.y());
+}
