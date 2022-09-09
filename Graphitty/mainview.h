@@ -29,6 +29,8 @@ private slots:
   void on_actionProjektmappe_schlie_en_triggered();
   void on_update_clicked();
 
+  void on_tableWidget_cellActivated(int row, int column);
+
 private:
   Ui::MainView* ui;
   void initializeChart();
@@ -43,11 +45,12 @@ private:
   int mToCalc = 7;
   QLineSeries* addFunctionToChart(FunctionNode* func, QList<map<string, double>>& variablesList,
                                   const string& letter, const QString& name);
-  QLineSeries* addDerivationToChart(QList<map<string, double>>& variablesList,
+  QLineSeries* addDerivationToChart(const string& letter, QList<map<string, double>>& variablesList,
                                     const string& letterToDerivate, const QString& name);
   QList<QLineSeries*>* addYThresholdToChart(QList<map<string, double>>& variablesList,
                                             const string& letter, double threshold,
                                             const QString& name);
+  void setSeries();
   QChart* chart;
   QValueAxis* axisX;
   QValueAxis* axisY;

@@ -1,6 +1,7 @@
 QT       += core gui \
             charts \
-            widgets
+            widgets \
+            core5compat
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QMessageBox>
 #include <QPointF>
+#include <QRegExp>
 #include <fstream>
 #include <qlineseries.h>
 #include <qvalueaxis.h>
@@ -96,29 +97,7 @@ void MainView::initializeChart()
   this->ui->chartView->setChart(chart);
   this->chart = chart;
 
-  double from = mFromCalc;
-  double to = mToCalc;
-
-  double delta = to - from;
-  int resolution = 1000;
-  double stepSize = (double)delta / (double)resolution;
-
-  QList<map<string, double>> variablesList;
-  for (int i = 0; i <= resolution; i++)
-  {
-    double r = from + stepSize * i;
-    variablesList.append(map<string, double>{{BASE_LETTER, r}});
-  }
-
-  this->addFunctionToChart(&mCalculation, variablesList, "x", "Produktionsfunktion x");
-  this->addDerivationToChart(variablesList, "x", "Grenzertrag x'");
-  this->addDerivationToChart(variablesList, "x'", "Grenzertragszuwachs x''");
-  this->addFunctionToChart(&mOtherCalculation, variablesList, "e", "Durschnittsertrag e");
-  this->addDerivationToChart(variablesList, "e", "e'");
-
-  this->addYThresholdToChart(variablesList, "x''", 0.0, "Übergang Phase 1 zu 2");
-  this->addYThresholdToChart(variablesList, "e'", 0.0, "Übergang Phase 2 zu 3");
-  this->addYThresholdToChart(variablesList, "x'", 0.0, "Übergang Phase 3 zu 4");
+  this->setSeries();
 }
 
 QLineSeries* MainView::addFunctionToChart(FunctionNode* func,
@@ -147,13 +126,14 @@ QLineSeries* MainView::addFunctionToChart(FunctionNode* func,
   return series;
 }
 
-QLineSeries* MainView::addDerivationToChart(QList<map<string, double>>& variablesList,
+QLineSeries* MainView::addDerivationToChart(const string& letter,
+                                            QList<map<string, double>>& variablesList,
                                             const string& letterToDerivate, const QString& name)
 {
   QLineSeries* series = new QLineSeries();
   series->setName(name);
 
-  variablesList[0][letterToDerivate + "'"] = NAN;
+  variablesList[0][letter] = NAN;
 
   int length = variablesList.count() - 1;
   for (int i = 1; i < length; i++)
@@ -165,7 +145,7 @@ QLineSeries* MainView::addDerivationToChart(QList<map<string, double>>& variable
 
     double value = (next.y() - last.y()) / (next.x() - last.x());
     auto thisVars = &variablesList[i];
-    thisVars->insert_or_assign(letterToDerivate + "'", value);
+    thisVars->insert_or_assign(letter, value);
 
     if (value == NAN)
     {
@@ -175,7 +155,7 @@ QLineSeries* MainView::addDerivationToChart(QList<map<string, double>>& variable
     series->append(thisVars->at(BASE_LETTER), value);
   }
 
-  variablesList[length][letterToDerivate + "'"] = NAN;
+  variablesList[length][letter] = NAN;
 
   this->chart->addSeries(series);
   series->attachAxis(this->axisX);
@@ -221,6 +201,66 @@ QList<QLineSeries*>* MainView::addYThresholdToChart(QList<map<string, double>>& 
   return listOfSeries;
 }
 
+void MainView::setSeries()
+{
+  this->chart->removeAllSeries();
+
+  double from = mFromCalc;
+  double to = mToCalc;
+
+  double delta = to - from;
+  int resolution = 1000;
+  double stepSize = (double)delta / (double)resolution;
+
+  QList<map<string, double>> variablesList;
+  for (int i = 0; i <= resolution; i++)
+  {
+    double r = from + stepSize * i;
+    variablesList.append(map<string, double>{{BASE_LETTER, r}});
+  }
+
+  auto pattern = "^derivate\\(.*?([^\\ \\t])\\ ?.*?\\)$";
+  QRegularExpression derivateRegex(pattern, QRegularExpression::DotMatchesEverythingOption);
+
+  auto test = "derivate( x )";
+  QRegularExpressionMatch match = derivateRegex.match(test);
+  if (match.hasMatch())
+  {
+    auto letter = match.captured(1);
+  }
+
+  QList<FunctionNode*> functions;
+  for (int i = 0; i < this->ui->tableWidget->rowCount(); i++)
+  {
+    auto definition = this->ui->tableWidget->item(i, 2)->text();
+    auto match = derivateRegex.match(definition);
+    if (match.hasMatch())
+    {
+      auto letter = match.captured(1);
+      this->addDerivationToChart(this->ui->tableWidget->item(i, 0)->text().toStdString(),
+                                 variablesList, letter.toStdString(),
+                                 this->ui->tableWidget->item(i, 1)->text());
+    }
+    else
+    {
+      auto func = new FunctionNode(definition.toStdString());
+      this->addFunctionToChart(func, variablesList,
+                               this->ui->tableWidget->item(i, 0)->text().toStdString(),
+                               this->ui->tableWidget->item(i, 1)->text());
+      functions.append(func);
+    }
+  }
+
+  this->addYThresholdToChart(variablesList, "x''", 0.0, "Übergang Phase 1 zu 2");
+  this->addYThresholdToChart(variablesList, "e'", 0.0, "Übergang Phase 2 zu 3");
+  this->addYThresholdToChart(variablesList, "x'", 0.0, "Übergang Phase 3 zu 4");
+
+  for (auto singleFunction : functions)
+  {
+    delete singleFunction;
+  }
+}
+
 void MainView::on_polyEdit_clicked()
 {
   auto* polyView = new PolyEditView(this);
@@ -243,9 +283,7 @@ void MainView::on_update_clicked()
 {
   try
   {
-    mCalculation = FunctionNode(ui->lineEditFunction->text().toStdString());
-    ui->lineEditFunction->setText(QString(mCalculation.toStrnig().c_str()));
-    initializeChart();
+    setSeries();
   }
   catch (FunctionParserException e)
   {
@@ -253,4 +291,8 @@ void MainView::on_update_clicked()
     QMessageBox::information(this, "The function contains an error.", e.getMessage().c_str(),
                              QMessageBox::Ok);
   }
+}
+
+void MainView::on_tableWidget_cellActivated(int row, int column)
+{
 }
