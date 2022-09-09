@@ -1,5 +1,6 @@
 #include "startview.h"
 
+#include <MainView.h>
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
@@ -23,7 +24,17 @@ int main(int argc, char* argv[])
       break;
     }
   }
-  StartView w;
-  w.show();
+
+  MainView m;
+  StartView w(&m);
+  w.exec();
+
+  auto fileName = w.getFileName();
+  if (!fileName.isEmpty())
+  {
+    m.openProject(fileName);
+  }
+  m.show();
+
   return a.exec();
 }

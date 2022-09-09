@@ -16,6 +16,9 @@
 
 string BASE_LETTER = "r";
 
+QRegularExpression derivateRegex("^derivate\\(.*?([^\\ \\t])\\ ?.*?\\)$",
+                                 QRegularExpression::DotMatchesEverythingOption);
+
 MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
 {
   ui->setupUi(this);
@@ -217,16 +220,6 @@ void MainView::setSeries()
   {
     double r = from + stepSize * i;
     variablesList.append(map<string, double>{{BASE_LETTER, r}});
-  }
-
-  auto pattern = "^derivate\\(.*?([^\\ \\t])\\ ?.*?\\)$";
-  QRegularExpression derivateRegex(pattern, QRegularExpression::DotMatchesEverythingOption);
-
-  auto test = "derivate( x )";
-  QRegularExpressionMatch match = derivateRegex.match(test);
-  if (match.hasMatch())
-  {
-    auto letter = match.captured(1);
   }
 
   QList<FunctionNode*> functions;

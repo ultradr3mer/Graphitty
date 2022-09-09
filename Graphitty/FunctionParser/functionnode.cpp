@@ -1,6 +1,7 @@
 #include "functionnode.h"
 #include "VariableNotDefinedException.h"
 
+#include <QString>
 #include <algorithm>
 #include <iostream>
 using namespace std;
@@ -32,17 +33,20 @@ FunctionNode::FunctionNode(string expression)
   // do the next operation, if it exists
   if (!doNextOperation())
   {
+    auto qStr = QString::fromStdString(expr);
     // if false is returned, this is not a math operation, so it's a constant or
     // variable.
-    try
+    bool ok;
+    auto tmp = qStr.toDouble(&ok);
+    if (!ok)
     {
-      // this is a constant
-      value = stod(expr);
-    }
-    catch (std::invalid_argument e)
-    {
-      // this is a variable
+      // Variable
       varName = expr;
+    }
+    else
+    {
+      // Constant Value
+      value = tmp;
     }
   }
 }

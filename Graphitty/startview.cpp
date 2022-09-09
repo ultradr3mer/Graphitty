@@ -3,7 +3,7 @@
 #include "ui_startview.h"
 #include <QFileDialog>
 
-StartView::StartView(QWidget* parent) : QMainWindow(parent), ui(new Ui::StartView)
+StartView::StartView(QWidget* parent) : QDialog(parent), ui(new Ui::StartView)
 {
   ui->setupUi(this);
 }
@@ -16,17 +16,18 @@ StartView::~StartView()
 void StartView::on_newProject_clicked()
 {
   auto* mainView = new MainView(this);
-  this->hide();
-  mainView->show();
+  this->close();
+  //  mainView->show();
 }
 
 void StartView::on_openProject_clicked()
 {
-  auto fileName =
+  this->fileName =
       QFileDialog::getOpenFileName(this, tr("Open Project"), "/home", tr("Json Files (*.json)"));
 
-  MainView mainView;
-  mainView.openProject(fileName);
-  this->hide();
-  mainView.show();
+  this->close();
+  //  MainView mainView;
+  //  mainView.openProject(fileName);
+  //  this->hide();
+  //  mainView.show();
 }

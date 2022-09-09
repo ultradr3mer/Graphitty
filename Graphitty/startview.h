@@ -1,6 +1,7 @@
 #ifndef STARTVIEW_H
 #define STARTVIEW_H
 
+#include <QDialog>
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -10,7 +11,7 @@ class StartView;
 }
 QT_END_NAMESPACE
 
-class StartView : public QMainWindow
+class StartView : public QDialog
 {
   Q_OBJECT
 
@@ -19,6 +20,11 @@ public:
   ~StartView();
   void newProject();
 
+  inline QString getFileName()
+  {
+    return fileName;
+  }
+
 private slots:
   void on_newProject_clicked();
 
@@ -26,5 +32,6 @@ private slots:
 
 private:
   Ui::StartView* ui;
+  QString fileName;
 };
 #endif // STARTVIEW_H
