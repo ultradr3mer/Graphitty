@@ -17,6 +17,8 @@ SOURCES += \
     FunctionParser/mathoperation.cpp \
     FunctionParser/mathoperationexception.cpp \
     FunctionParser/variablenotdefinedexception.cpp \
+    Math/lineqsolver.cpp \
+    Math/polynomialfinder.cpp \
     main.cpp \
     mainview.cpp \
     polyeditchartview.cpp \
@@ -30,6 +32,8 @@ HEADERS += \
     FunctionParser/mathoperation.h \
     FunctionParser/mathoperationexception.h \
     FunctionParser/variablenotdefinedexception.h \
+    Math/lineqsolver.h \
+    Math/polynomialfinder.h \
     mainview.h \
     polyeditchartview.h \
     polyeditview.h \
