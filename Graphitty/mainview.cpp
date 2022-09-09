@@ -16,7 +16,7 @@
 
 const string BASE_LETTER = "r";
 
-QRegularExpression derivateRegex("^derivate\\(.*?([^\\ \\t])\\ ?.*?\\)$",
+QRegularExpression derivateRegex("^derivate\\((.*?)\\)$",
                                  QRegularExpression::DotMatchesEverythingOption);
 
 MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
@@ -219,17 +219,14 @@ void MainView::setSeries()
 
   this->chart->removeAllSeries();
 
-  double from = mFromCalc;
-  double to = mToCalc;
-
-  double delta = to - from;
-  int resolution = 1000;
+  double delta = this->viewArea.getWidth();
+  int resolution = 300;
   double stepSize = (double)delta / (double)resolution;
 
   QList<map<string, double>> variablesList;
   for (int i = 0; i <= resolution; i++)
   {
-    double r = from + stepSize * i;
+    double r = this->ui->fromX->value() + stepSize * i;
     variablesList.append(map<string, double>{{BASE_LETTER, r}});
   }
 
@@ -240,7 +237,7 @@ void MainView::setSeries()
     auto match = derivateRegex.match(definition);
     if (match.hasMatch())
     {
-      auto letter = match.captured(1);
+      auto letter = match.captured(1).trimmed();
       this->addDerivationToChart(this->ui->tableWidget->item(i, 0)->text().toStdString(),
                                  variablesList, letter.toStdString(),
                                  this->ui->tableWidget->item(i, 1)->text());
@@ -255,9 +252,13 @@ void MainView::setSeries()
     }
   }
 
-  this->addYThresholdToChart(variablesList, "x''", 0.0, "Übergang Phase 1 zu 2");
-  this->addYThresholdToChart(variablesList, "e'", 0.0, "Übergang Phase 2 zu 3");
-  this->addYThresholdToChart(variablesList, "x'", 0.0, "Übergang Phase 3 zu 4");
+  for (int i = 0; i < this->ui->yThresholds->rowCount(); i++)
+  {
+    this->addYThresholdToChart(variablesList,
+                               this->ui->yThresholds->item(i, 1)->text().toStdString(),
+                               this->ui->yThresholds->item(i, 2)->text().toDouble(),
+                               this->ui->yThresholds->item(i, 0)->text());
+  }
 
   for (auto singleFunction : functions)
   {

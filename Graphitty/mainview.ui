@@ -15,7 +15,28 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="2">
+    <item row="0" column="0" rowspan="4">
+     <widget class="QTreeWidget" name="treeWidget_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>200</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <column>
+       <property name="text">
+        <string notr="true">1</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item row="3" column="2">
      <widget class="QGroupBox" name="groupBox_4">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -63,7 +84,101 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="1" rowspan="2">
+    <item row="2" column="2">
+     <widget class="QGroupBox" name="groupBox_6">
+      <property name="minimumSize">
+       <size>
+        <width>400</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Y Thresholds</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QTableWidget" name="yThresholds">
+         <row>
+          <property name="text">
+           <string/>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string/>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string/>
+          </property>
+         </row>
+         <column>
+          <property name="text">
+           <string>Name</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Value</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Threshold</string>
+          </property>
+         </column>
+         <item row="0" column="0">
+          <property name="text">
+           <string>Übergang Phase 1 zu 2</string>
+          </property>
+         </item>
+         <item row="0" column="1">
+          <property name="text">
+           <string>x''</string>
+          </property>
+         </item>
+         <item row="0" column="2">
+          <property name="text">
+           <string>0.0</string>
+          </property>
+         </item>
+         <item row="1" column="0">
+          <property name="text">
+           <string>Übergang Phase 2 zu 3</string>
+          </property>
+         </item>
+         <item row="1" column="1">
+          <property name="text">
+           <string>e'</string>
+          </property>
+         </item>
+         <item row="1" column="2">
+          <property name="text">
+           <string>0.0</string>
+          </property>
+         </item>
+         <item row="2" column="0">
+          <property name="text">
+           <string>Übergang Phase 3 zu 4</string>
+          </property>
+         </item>
+         <item row="2" column="1">
+          <property name="text">
+           <string>x'</string>
+          </property>
+         </item>
+         <item row="2" column="2">
+          <property name="text">
+           <string>0.0</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1" rowspan="4">
      <widget class="QScrollArea" name="scrollArea">
       <property name="widgetResizable">
        <bool>true</bool>
@@ -73,7 +188,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>356</width>
+         <width>328</width>
          <height>730</height>
         </rect>
        </property>
@@ -235,156 +350,150 @@
       </widget>
      </widget>
     </item>
-    <item row="0" column="0" rowspan="2">
-     <widget class="QTreeWidget" name="treeWidget_2">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>200</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <column>
-       <property name="text">
-        <string notr="true">1</string>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QTableWidget" name="tableWidget">
+    <item row="1" column="2">
+     <widget class="QGroupBox" name="groupBox_5">
       <property name="minimumSize">
        <size>
-        <width>200</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
         <width>400</width>
-        <height>16777215</height>
+        <height>200</height>
        </size>
       </property>
-      <row>
-       <property name="text">
-        <string/>
-       </property>
-      </row>
-      <row>
-       <property name="text">
-        <string/>
-       </property>
-      </row>
-      <row>
-       <property name="text">
-        <string/>
-       </property>
-      </row>
-      <row>
-       <property name="text">
-        <string/>
-       </property>
-      </row>
-      <row>
-       <property name="text">
-        <string/>
-       </property>
-      </row>
-      <column>
-       <property name="text">
-        <string>Letter</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Definition</string>
-       </property>
-      </column>
-      <item row="0" column="0">
-       <property name="text">
-        <string>x</string>
-       </property>
-      </item>
-      <item row="0" column="1">
-       <property name="text">
-        <string>Produktionsfunktion x</string>
-       </property>
-      </item>
-      <item row="0" column="2">
-       <property name="text">
-        <string>6(r+r^2)-r^3</string>
-       </property>
-      </item>
-      <item row="1" column="0">
-       <property name="text">
-        <string>x'</string>
-       </property>
-      </item>
-      <item row="1" column="1">
-       <property name="text">
-        <string>Grenzertrag x'</string>
-       </property>
-      </item>
-      <item row="1" column="2">
-       <property name="text">
-        <string>derivate(x)</string>
-       </property>
-      </item>
-      <item row="2" column="0">
-       <property name="text">
-        <string>x''</string>
-       </property>
-      </item>
-      <item row="2" column="1">
-       <property name="text">
-        <string>Grenzertragszuwachs x''</string>
-       </property>
-      </item>
-      <item row="2" column="2">
-       <property name="text">
-        <string>derivate(x')</string>
-       </property>
-      </item>
-      <item row="3" column="0">
-       <property name="text">
-        <string>e</string>
-       </property>
-      </item>
-      <item row="3" column="1">
-       <property name="text">
-        <string>Durschnittsertrag e</string>
-       </property>
-      </item>
-      <item row="3" column="2">
-       <property name="text">
-        <string>x/r</string>
-       </property>
-      </item>
-      <item row="4" column="0">
-       <property name="text">
-        <string>e'</string>
-       </property>
-      </item>
-      <item row="4" column="1">
-       <property name="text">
-        <string>Ableitung e'</string>
-       </property>
-      </item>
-      <item row="4" column="2">
-       <property name="text">
-        <string>derivate(e)</string>
-       </property>
-      </item>
+      <property name="title">
+       <string>Functions</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <widget class="QTableWidget" name="tableWidget">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>400</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <row>
+          <property name="text">
+           <string/>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string/>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string/>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string/>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string/>
+          </property>
+         </row>
+         <column>
+          <property name="text">
+           <string>Letter</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Name</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Definition</string>
+          </property>
+         </column>
+         <item row="0" column="0">
+          <property name="text">
+           <string>x</string>
+          </property>
+         </item>
+         <item row="0" column="1">
+          <property name="text">
+           <string>Produktionsfunktion x</string>
+          </property>
+         </item>
+         <item row="0" column="2">
+          <property name="text">
+           <string>6(r+r^2)-r^3</string>
+          </property>
+         </item>
+         <item row="1" column="0">
+          <property name="text">
+           <string>x'</string>
+          </property>
+         </item>
+         <item row="1" column="1">
+          <property name="text">
+           <string>Grenzertrag x'</string>
+          </property>
+         </item>
+         <item row="1" column="2">
+          <property name="text">
+           <string>derivate(x)</string>
+          </property>
+         </item>
+         <item row="2" column="0">
+          <property name="text">
+           <string>x''</string>
+          </property>
+         </item>
+         <item row="2" column="1">
+          <property name="text">
+           <string>Grenzertragszuwachs x''</string>
+          </property>
+         </item>
+         <item row="2" column="2">
+          <property name="text">
+           <string>derivate(x')</string>
+          </property>
+         </item>
+         <item row="3" column="0">
+          <property name="text">
+           <string>e</string>
+          </property>
+         </item>
+         <item row="3" column="1">
+          <property name="text">
+           <string>Durschnittsertrag e</string>
+          </property>
+         </item>
+         <item row="3" column="2">
+          <property name="text">
+           <string>x/r</string>
+          </property>
+         </item>
+         <item row="4" column="0">
+          <property name="text">
+           <string>e'</string>
+          </property>
+         </item>
+         <item row="4" column="1">
+          <property name="text">
+           <string>Ableitung e'</string>
+          </property>
+         </item>
+         <item row="4" column="2">
+          <property name="text">
+           <string>derivate(e)</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
