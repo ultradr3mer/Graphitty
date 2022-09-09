@@ -8,6 +8,8 @@
 
 #include "FunctionParser/functionnode.h"
 
+extern const string BASE_LETTER;
+
 namespace Ui
 {
 class MainView;

@@ -22,6 +22,11 @@ public:
   void setPointClicked(bool clicked);
   ~PolyEditView();
 
+  inline QString getFormula()
+  {
+    return formula;
+  }
+
 public slots:
   //  void clickPoint(const QPointF& point);
 
@@ -29,6 +34,8 @@ private slots:
   void on_add_clicked();
   void on_remove_clicked();
   void on_update_clicked();
+
+  void on_buttonBox_accepted();
 
 private:
   QPoint mousePos;
@@ -43,6 +50,7 @@ private:
   QValueAxis* axisY;
   QPointF pointOnGraph(const QPoint& point);
   QPointF pointOnWidget(const QPointF& point);
+  QString formula;
 
   double fromX;
   double toX;

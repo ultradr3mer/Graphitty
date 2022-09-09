@@ -14,7 +14,7 @@
 #include <qlineseries.h>
 #include <qvalueaxis.h>
 
-string BASE_LETTER = "r";
+const string BASE_LETTER = "r";
 
 QRegularExpression derivateRegex("^derivate\\(.*?([^\\ \\t])\\ ?.*?\\)$",
                                  QRegularExpression::DotMatchesEverythingOption);
@@ -256,8 +256,29 @@ void MainView::setSeries()
 
 void MainView::on_polyEdit_clicked()
 {
+  int row = -1;
+  for (QTableWidgetItem* item : this->ui->tableWidget->selectedItems())
+  {
+    row = item->row();
+    break;
+  }
+
+  if (row == -1)
+  {
+    QMessageBox msgBox;
+    msgBox.setText("No Row Selected.");
+    msgBox.setInformativeText("Please select a row that you want to generate an equation for.");
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    msgBox.exec();
+    return;
+  }
+
   auto* polyView = new PolyEditView(this);
-  polyView->show();
+  polyView->exec();
+
+  auto formula = polyView->getFormula();
+  this->ui->tableWidget->item(row, 2)->setText(formula);
 }
 
 void MainView::on_actionSpeichern_unter_triggered()

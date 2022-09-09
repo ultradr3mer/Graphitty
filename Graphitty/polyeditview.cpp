@@ -1,4 +1,5 @@
 #include "polyeditview.h"
+#include "mainview.h"
 #include "ui_polyeditview.h"
 #include <QtCharts/QAbstractAxis>
 #include <QtCharts/QValueAxis>
@@ -95,6 +96,33 @@ double calculatePolynomial(std::vector<double>* coefficients, double x)
     value += coefficients->at(i) * pow(x, degree - 1 - i);
   }
   return value;
+}
+
+QString generateFormula(std::vector<double>* coefficients)
+{
+  QStringList result;
+  int degree = coefficients->size();
+  for (int i = 0; i < degree; i++)
+  {
+    if (coefficients->at(i) == 0.0)
+    {
+      continue;
+    }
+
+    int power = degree - 1 - i;
+    if (power > 0)
+    {
+      result.append(QString("(%1*%2^%3)")
+                        .arg(QString::number(coefficients->at(i)),
+                             QString::fromStdString(BASE_LETTER), QString::number(degree - 1 - i)));
+    }
+    else
+    {
+      result.append(QString::number(coefficients->at(i)));
+    }
+  }
+
+  return result.join(" + ");
 }
 
 PolyEditView::PolyEditView(QWidget* parent) : QDialog(parent), ui(new Ui::PolyEditView)
@@ -234,6 +262,9 @@ void PolyEditView::updatePoly()
   this->chart->addSeries(this->polySeries);
   this->polySeries->attachAxis(this->axisX);
   this->polySeries->attachAxis(this->axisY);
+
+  this->formula = generateFormula(&coefficients);
+  this->ui->formulaField->setText(this->formula);
 }
 
 void PolyEditView::setPointClicked(bool clicked)
@@ -343,4 +374,8 @@ void PolyEditView::on_remove_clicked()
   }
 
   this->updatePoly();
+}
+
+void PolyEditView::on_buttonBox_accepted()
+{
 }
