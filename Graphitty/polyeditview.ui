@@ -107,7 +107,7 @@
       </size>
      </property>
      <property name="title">
-      <string>Resulting Function</string>
+      <string>Resulting Functiond</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">

@@ -130,9 +130,6 @@ PolyEditView::PolyEditView(QWidget* parent) : QDialog(parent), ui(new Ui::PolyEd
   ui->setupUi(this);
 
   m_clicked = false;
-
-  this->initialize();
-  this->updatePoly();
 }
 
 PolyEditView::~PolyEditView()
@@ -140,13 +137,8 @@ PolyEditView::~PolyEditView()
   delete ui;
 }
 
-void PolyEditView::initialize()
+void PolyEditView::initializeChart()
 {
-  fromX = 0.0;
-  toX = 4.0;
-  fromY = 0.0;
-  toY = 4.0;
-
   QScatterSeries* series = new QScatterSeries();
 
   std::vector<std::array<double, 2>> points = {
@@ -169,13 +161,13 @@ void PolyEditView::initialize()
 
   QValueAxis* axisX = new QValueAxis();
   chart->addAxis(axisX, Qt::AlignBottom);
-  axisX->setRange(fromX, toX);
+  axisX->setRange(this->viewArea.getFromX(), this->viewArea.getToX());
   series->attachAxis(axisX);
   poly->attachAxis(axisX);
 
   QValueAxis* axisY = new QValueAxis();
   chart->addAxis(axisY, Qt::AlignLeft);
-  axisY->setRange(fromY, toY);
+  axisY->setRange(this->viewArea.getFromY(), this->viewArea.getToY());
   series->attachAxis(axisY);
   poly->attachAxis(axisY);
 
@@ -204,11 +196,11 @@ QPointF PolyEditView::pointOnGraph(const QPoint& point)
   mappedPoint.setX(point.x() - this->chart->plotArea().x());
   mappedPoint.setY(point.y() - this->chart->plotArea().y());
 
-  double xUnit = this->chart->plotArea().width() / (toX - fromX);
-  double yUnit = this->chart->plotArea().height() / (toY - fromY);
+  double xUnit = this->chart->plotArea().width() / this->viewArea.getWidth();
+  double yUnit = this->chart->plotArea().height() / this->viewArea.getHeight();
 
   double x = mappedPoint.x() / xUnit;
-  double y = toY - mappedPoint.y() / yUnit;
+  double y = this->viewArea.getToY() - mappedPoint.y() / yUnit;
 
   return QPointF(x, y);
 }
@@ -216,11 +208,11 @@ QPointF PolyEditView::pointOnGraph(const QPoint& point)
 QPointF PolyEditView::pointOnWidget(const QPointF& point)
 {
   QPointF mappedPoint = point;
-  mappedPoint.setX(point.x() - fromX);
-  mappedPoint.setY(point.y() - fromY);
+  mappedPoint.setX(point.x() - this->viewArea.getFromX());
+  mappedPoint.setY(point.y() - this->viewArea.getFromY());
 
-  double xUnit = this->chart->plotArea().width() / (toX - fromX);
-  double yUnit = this->chart->plotArea().height() / (toY - fromY);
+  double xUnit = this->chart->plotArea().width() / this->viewArea.getWidth();
+  double yUnit = this->chart->plotArea().height() / this->viewArea.getHeight();
 
   double x = this->chart->plotArea().x() + mappedPoint.x() * xUnit;
   double y =
@@ -231,7 +223,7 @@ QPointF PolyEditView::pointOnWidget(const QPointF& point)
 
 void PolyEditView::updatePoly()
 {
-  double delta = toX - fromX;
+  double delta = this->viewArea.getWidth();
   int resolution = 1000;
   double stepSize = (double)delta / (double)resolution;
 
@@ -255,7 +247,7 @@ void PolyEditView::updatePoly()
   this->polySeries->clear();
   for (int i = 0; i <= resolution; i++)
   {
-    double r = fromX + stepSize * i;
+    double r = this->viewArea.getFromX() + stepSize * i;
     this->polySeries->append(r, calculatePolynomial(&coefficients, r));
   }
 
@@ -273,14 +265,21 @@ void PolyEditView::setPointClicked(bool clicked)
 
   if (!clicked)
   {
-    if (this->movingPoint.x() < fromX || this->movingPoint.x() > toX ||
-        this->movingPoint.y() < fromY || this->movingPoint.y() > toY)
+    if (!this->viewArea.isInside(this->movingPoint))
     {
       this->pointsSeries->remove(movingPoint);
     }
 
     this->updatePoly();
   }
+}
+
+void PolyEditView::initialize(const ViewArea& viewArea)
+{
+  this->viewArea = viewArea;
+
+  this->initializeChart();
+  this->updatePoly();
 }
 
 void PolyEditView::handlePointMove(const QPoint& point)

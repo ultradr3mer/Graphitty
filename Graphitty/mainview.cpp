@@ -21,6 +21,8 @@ QRegularExpression derivateRegex("^derivate\\(.*?([^\\ \\t])\\ ?.*?\\)$",
 
 MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
 {
+  this->viewArea = ViewArea(0.0, 7.0, 0.0, 60.0);
+
   ui->setupUi(this);
 
   this->mCalculation = FunctionNode("6(r+r^2)-r^3");
@@ -51,10 +53,8 @@ void MainView::openProject(const QString& fileName)
   QJsonObject item = value.toObject();
 
   /* in case of string value get value and convert into string*/
-  mFromX = item["fromX"].toInt();
-  mToX = item["toX"].toInt();
-  mFromY = item["fromY"].toInt();
-  mToY = item["toY"].toInt();
+  this->viewArea = ViewArea(item["fromX"].toDouble(), item["toX"].toDouble(),
+                            item["fromY"].toDouble(), item["toY"].toDouble());
 
   mCalculation = FunctionNode(item["calculation"].toString().toStdString());
   mFromCalc = item["fromCalc"].toInt();
@@ -88,17 +88,22 @@ void MainView::initializeChart()
   QChart* chart = new QChart();
 
   QValueAxis* axisX = new QValueAxis();
-  axisX->setRange(mFromX, mToX);
+  axisX->setRange(viewArea.getFromX(), viewArea.getToX());
   chart->addAxis(axisX, Qt::AlignBottom);
   this->axisX = axisX;
 
   QValueAxis* axisY = new QValueAxis();
-  axisY->setRange(mFromY, mToY);
+  axisY->setRange(viewArea.getFromY(), viewArea.getToY());
   chart->addAxis(axisY, Qt::AlignLeft);
   this->axisY = axisY;
 
   this->ui->chartView->setChart(chart);
   this->chart = chart;
+
+  this->ui->fromX->setValue(viewArea.getFromX());
+  this->ui->toX->setValue(viewArea.getToX());
+  this->ui->fromY->setValue(viewArea.getFromY());
+  this->ui->toY->setValue(viewArea.getToY());
 
   this->setSeries();
 }
@@ -191,8 +196,8 @@ QList<QLineSeries*>* MainView::addYThresholdToChart(QList<map<string, double>>& 
       continue;
     }
 
-    series->append(intersectionX, this->mFromY);
-    series->append(intersectionX, this->mToY);
+    series->append(intersectionX, this->viewArea.getFromY());
+    series->append(intersectionX, this->viewArea.getToY());
 
     this->chart->addSeries(series);
     series->attachAxis(this->axisX);
@@ -206,6 +211,12 @@ QList<QLineSeries*>* MainView::addYThresholdToChart(QList<map<string, double>>& 
 
 void MainView::setSeries()
 {
+  this->viewArea = ViewArea(this->ui->fromX->value(), this->ui->toX->value(),
+                            this->ui->fromY->value(), this->ui->toY->value());
+
+  this->axisX->setRange(this->viewArea.getFromX(), this->viewArea.getToX());
+  this->axisY->setRange(this->viewArea.getFromY(), this->viewArea.getToY());
+
   this->chart->removeAllSeries();
 
   double from = mFromCalc;
@@ -274,7 +285,8 @@ void MainView::on_polyEdit_clicked()
     return;
   }
 
-  auto* polyView = new PolyEditView(this);
+  auto polyView = new PolyEditView(this);
+  polyView->initialize(this->viewArea);
   polyView->exec();
 
   auto formula = polyView->getFormula();

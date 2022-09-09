@@ -6,6 +6,8 @@
 #include <QScatterSeries>
 #include <QValueAxis>
 
+#include "viewarea.h"
+
 namespace Ui
 {
 class PolyEditView;
@@ -20,6 +22,7 @@ public:
   void handlePointMove(const QPoint& point);
   void handleMousePress(const QPoint& point);
   void setPointClicked(bool clicked);
+  void initialize(const ViewArea& viewArea);
   ~PolyEditView();
 
   inline QString getFormula()
@@ -40,7 +43,7 @@ private slots:
 private:
   QPoint mousePos;
   Ui::PolyEditView* ui;
-  void initialize();
+  void initializeChart();
   qreal distance(const QPointF& p1, const QPointF& p2);
   QScatterSeries* pointsSeries;
   QLineSeries* polySeries;
@@ -52,10 +55,7 @@ private:
   QPointF pointOnWidget(const QPointF& point);
   QString formula;
 
-  double fromX;
-  double toX;
-  double fromY;
-  double toY;
+  ViewArea viewArea;
 
   // Boolean value to determine if an actual point in the
   // series is clicked.

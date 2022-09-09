@@ -7,6 +7,7 @@
 #include <QValueAxis>
 
 #include "FunctionParser/functionnode.h"
+#include "viewarea.h"
 
 extern const string BASE_LETTER;
 
@@ -37,10 +38,7 @@ private:
   Ui::MainView* ui;
   void initializeChart();
   bool mImported = false;
-  int mFromX = 0;
-  int mToX = 7;
-  int mFromY = 0;
-  int mToY = 60;
+  ViewArea viewArea;
   FunctionNode mCalculation;
   FunctionNode mOtherCalculation;
   int mFromCalc = 0;

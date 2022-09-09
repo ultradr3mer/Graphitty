@@ -21,7 +21,8 @@ SOURCES += \
     mainview.cpp \
     polyeditchartview.cpp \
     polyeditview.cpp \
-    startview.cpp
+    startview.cpp \
+    viewarea.cpp
 
 HEADERS += \
     FunctionParser/functionnode.h \
@@ -32,7 +33,8 @@ HEADERS += \
     mainview.h \
     polyeditchartview.h \
     polyeditview.h \
-    startview.h
+    startview.h \
+    viewarea.h
 
 FORMS += \
     mainview.ui \
