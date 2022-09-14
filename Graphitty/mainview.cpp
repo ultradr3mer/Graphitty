@@ -27,6 +27,10 @@ MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
 
   this->mCalculation = FunctionNode("6(r+r^2)-r^3");
   this->mOtherCalculation = FunctionNode("x/r");
+  this->ui->fromX->setValue(viewArea.getFromX());
+  this->ui->toX->setValue(viewArea.getToX());
+  this->ui->fromY->setValue(viewArea.getFromY());
+  this->ui->toY->setValue(viewArea.getToY());
   this->initializeChart();
 }
 
@@ -62,11 +66,6 @@ void MainView::openProject(const QString& fileName)
 
   mImported = true;
 
-  /* in case of array get array and convert into string*/
-  // qWarning() << tr("QJsonObject[function] of value: ") << item["content"];
-  // QJsonArray test = item["content"].toArray();
-  // qWarning() << test[1].toString();
-
   this->initializeChart();
 }
 
@@ -100,11 +99,6 @@ void MainView::initializeChart()
   this->ui->chartView->setChart(chart);
   this->chart = chart;
 
-  this->ui->fromX->setValue(viewArea.getFromX());
-  this->ui->toX->setValue(viewArea.getToX());
-  this->ui->fromY->setValue(viewArea.getFromY());
-  this->ui->toY->setValue(viewArea.getToY());
-
   this->setSeries();
 }
 
@@ -124,7 +118,7 @@ QLineSeries* MainView::addFunctionToChart(FunctionNode* func,
       continue;
     }
 
-    series->append(singleVariables.at(BASE_LETTER), value);
+    this->addPointToSeries(series, singleVariables.at(BASE_LETTER), value);
   }
 
   this->chart->addSeries(series);
@@ -160,7 +154,7 @@ QLineSeries* MainView::addDerivationToChart(const string& letter,
       continue;
     }
 
-    series->append(thisVars->at(BASE_LETTER), value);
+    this->addPointToSeries(series, thisVars->at(BASE_LETTER), value);
   }
 
   variablesList[length][letter] = NAN;
@@ -196,8 +190,11 @@ QList<QLineSeries*>* MainView::addYThresholdToChart(QList<map<string, double>>& 
       continue;
     }
 
-    series->append(intersectionX, this->viewArea.getFromY());
-    series->append(intersectionX, this->viewArea.getToY());
+    bool inverted = this->ui->invert->isChecked();
+    this->addPointToSeries(series, intersectionX,
+                           inverted ? this->viewArea.getFromX() : this->viewArea.getFromY());
+    this->addPointToSeries(series, intersectionX,
+                           inverted ? this->viewArea.getToX() : this->viewArea.getToY());
 
     this->chart->addSeries(series);
     series->attachAxis(this->axisX);
@@ -207,6 +204,18 @@ QList<QLineSeries*>* MainView::addYThresholdToChart(QList<map<string, double>>& 
   }
 
   return listOfSeries;
+}
+
+void MainView::addPointToSeries(QXYSeries* series, double x, double y)
+{
+  if (!this->ui->invert->isChecked())
+  {
+    series->append(x, y);
+  }
+  else
+  {
+    series->append(y, x);
+  }
 }
 
 void MainView::setSeries()
@@ -219,7 +228,8 @@ void MainView::setSeries()
 
   this->chart->removeAllSeries();
 
-  double delta = this->viewArea.getWidth();
+  bool inverted = this->ui->invert->isChecked();
+  double delta = inverted ? this->viewArea.getHeight() : this->viewArea.getWidth();
   int resolution = 300;
   double stepSize = (double)delta / (double)resolution;
 
@@ -310,6 +320,7 @@ void MainView::on_update_clicked()
 {
   try
   {
+    initializeChart();
     setSeries();
   }
   catch (FunctionParserException e)

@@ -188,8 +188,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>328</width>
-         <height>730</height>
+         <width>342</width>
+         <height>569</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -217,28 +217,60 @@
            <string>GroupBox</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="2" column="2">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>-</string>
+           <item row="3" column="3">
+            <widget class="QDoubleSpinBox" name="toY">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="minimum">
+              <double>-99.000000000000000</double>
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="2" column="1">
+            <widget class="QDoubleSpinBox" name="fromX">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="minimum">
+              <double>-99.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="3">
+            <widget class="QDoubleSpinBox" name="toX">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="minimum">
+              <double>-99.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
             <widget class="QLabel" name="label_2">
              <property name="text">
               <string>Y Axis</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
-            <widget class="QLabel" name="label_3">
+           <item row="3" column="2">
+            <widget class="QLabel" name="label_4">
              <property name="text">
               <string>-</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="4">
+           <item row="2" column="4">
             <spacer name="horizontalSpacer">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -251,31 +283,7 @@
              </property>
             </spacer>
            </item>
-           <item row="0" column="0" colspan="5">
-            <widget class="QChartView" name="chartView">
-             <property name="renderHints">
-              <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>X Axis</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QDoubleSpinBox" name="fromX">
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
+           <item row="3" column="1">
             <widget class="QDoubleSpinBox" name="fromY">
              <property name="minimumSize">
               <size>
@@ -283,67 +291,40 @@
                <height>0</height>
               </size>
              </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QDoubleSpinBox" name="toX">
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
+             <property name="minimum">
+              <double>-99.000000000000000</double>
              </property>
             </widget>
            </item>
-           <item row="2" column="3">
-            <widget class="QDoubleSpinBox" name="toY">
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
+           <item row="2" column="2">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="5">
+            <widget class="QChartView" name="chartView">
+             <property name="renderHints">
+              <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>X Axis</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="3">
+            <widget class="QLineEdit" name="name">
+             <property name="text">
+              <string>4 Phasen Schema der Kosten</string>
              </property>
             </widget>
            </item>
           </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>100</height>
-           </size>
-          </property>
-          <property name="title">
-           <string>GroupBox</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="groupBox_3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>100</height>
-           </size>
-          </property>
-          <property name="title">
-           <string>GroupBox</string>
-          </property>
          </widget>
         </item>
        </layout>
@@ -491,6 +472,13 @@
            <string>derivate(e)</string>
           </property>
          </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="invert">
+         <property name="text">
+          <string>Funktion Umkehren</string>
+         </property>
         </widget>
        </item>
       </layout>

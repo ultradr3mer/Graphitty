@@ -50,6 +50,8 @@ private:
   QList<QLineSeries*>* addYThresholdToChart(QList<map<string, double>>& variablesList,
                                             const string& letter, double threshold,
                                             const QString& name);
+  void addPointToSeries(QXYSeries* series, double x, double y);
+  //  QPointF getPointFromSeries(QXYSeries& series, int at);
   void setSeries();
   QChart* chart;
   QValueAxis* axisX;

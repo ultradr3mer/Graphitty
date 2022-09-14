@@ -119,7 +119,7 @@ void PolyEditView::updatePoly()
 
     auto stringX = QString::number(point.x());
     this->ui->tableWidget->setItem(row, 0, new QTableWidgetItem(stringX));
-    auto stringY = QString::number(point.x());
+    auto stringY = QString::number(point.y());
     this->ui->tableWidget->setItem(row, 1, new QTableWidgetItem(stringY));
     row++;
   }
@@ -203,7 +203,7 @@ void PolyEditView::handleMousePress(const QPoint& point)
 
   QPointF pointOnGraph = this->pointOnGraph(point);
   this->pointsSeries->append(pointOnGraph);
-  movingPoint = point;
+  movingPoint = pointOnGraph;
   m_clicked = true;
 }
 
