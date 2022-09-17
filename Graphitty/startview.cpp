@@ -1,5 +1,4 @@
 #include "startview.h"
-#include "mainview.h"
 #include "ui_startview.h"
 #include <QFileDialog>
 
@@ -15,7 +14,7 @@ StartView::~StartView()
 
 void StartView::on_newProject_clicked()
 {
-  auto* mainView = new MainView(this);
+  //  auto* mainView = new MainView(this);
   this->close();
   //  mainView->show();
 }

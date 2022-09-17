@@ -157,7 +157,7 @@ void PolyEditView::setPointClicked(bool clicked)
   }
 }
 
-void PolyEditView::initialize(const ViewArea& viewArea)
+void PolyEditView::initialize(ViewArea& viewArea)
 {
   this->viewArea = viewArea;
   this->ui->fromX->setValue(this->viewArea.getFromX());

@@ -1,6 +1,6 @@
 #include "startview.h"
 
-#include <MainView.h>
+#include <mainview.h>
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>

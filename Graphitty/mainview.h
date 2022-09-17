@@ -7,9 +7,7 @@
 #include <QValueAxis>
 
 #include "FunctionParser/functionnode.h"
-#include "viewarea.h"
-
-extern const string BASE_LETTER;
+#include "Models/mainviewmodel.h"
 
 namespace Ui
 {
@@ -38,24 +36,26 @@ private:
   Ui::MainView* ui;
   void initializeChart();
   bool mImported = false;
-  ViewArea viewArea;
   FunctionNode mCalculation;
   FunctionNode mOtherCalculation;
   int mFromCalc = 0;
   int mToCalc = 7;
-  QLineSeries* addFunctionToChart(FunctionNode* func, QList<map<string, double>>& variablesList,
-                                  const string& letter, const QString& name);
-  QLineSeries* addDerivationToChart(const string& letter, QList<map<string, double>>& variablesList,
-                                    const string& letterToDerivate, const QString& name);
-  QList<QLineSeries*>* addYThresholdToChart(QList<map<string, double>>& variablesList,
-                                            const string& letter, double threshold,
-                                            const QString& name);
-  void addPointToSeries(QXYSeries* series, double x, double y);
-  //  QPointF getPointFromSeries(QXYSeries& series, int at);
   void setSeries();
   QChart* chart;
   QValueAxis* axisX;
   QValueAxis* axisY;
+  MainViewModel model;
+
+  //  QLineSeries* addFunctionToChart(FunctionNode* func, QList<map<string, double>>& variablesList,
+  //                                  const string& letter, const QString& name);
+  //  QLineSeries* addDerivationToChart(const string& letter, QList<map<string, double>>&
+  //  variablesList,
+  //                                    const string& letterToDerivate, const QString& name);
+  //  QList<QLineSeries*>* addYThresholdToChart(QList<map<string, double>>& variablesList,
+  //                                            const string& letter, double threshold,
+  //                                            const QString& name);
+
+  void readViewSettings();
 };
 
 #endif // MAINVIEW_H

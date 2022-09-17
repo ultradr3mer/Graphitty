@@ -37,7 +37,7 @@ double calculatePolynomial(std::vector<double>* coefficients, double x)
 QString generateFormula(std::vector<double>* coefficients)
 {
   QStringList result;
-  int degree = coefficients->size();
+  auto degree = coefficients->size();
   for (int i = 0; i < degree; i++)
   {
     if (coefficients->at(i) == 0.0)

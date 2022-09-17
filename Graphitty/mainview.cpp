@@ -10,27 +10,23 @@
 #include <QMessageBox>
 #include <QPointF>
 #include <QRegExp>
+#include <QTableView>
 #include <fstream>
 #include <qlineseries.h>
 #include <qvalueaxis.h>
 
-const string BASE_LETTER = "r";
+#include <Data/functiondata.h>
+#include <Models/functionstablemodel.h>
 
-QRegularExpression derivateRegex("^derivate\\((.*?)\\)$",
-                                 QRegularExpression::DotMatchesEverythingOption);
-
-MainView::MainView(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainView)
+MainView::MainView(QWidget* parent)
+    : QMainWindow(parent), ui(new Ui::MainView), model(MainViewModel())
 {
-  this->viewArea = ViewArea(0.0, 7.0, 0.0, 60.0);
 
   ui->setupUi(this);
 
-  this->mCalculation = FunctionNode("6(r+r^2)-r^3");
-  this->mOtherCalculation = FunctionNode("x/r");
-  this->ui->fromX->setValue(viewArea.getFromX());
-  this->ui->toX->setValue(viewArea.getToX());
-  this->ui->fromY->setValue(viewArea.getFromY());
-  this->ui->toY->setValue(viewArea.getToY());
+  MyModel* model = new MyModel;
+  this->ui->testTable->setModel(model);
+  this->readViewSettings();
   this->initializeChart();
 }
 
@@ -57,8 +53,9 @@ void MainView::openProject(const QString& fileName)
   QJsonObject item = value.toObject();
 
   /* in case of string value get value and convert into string*/
-  this->viewArea = ViewArea(item["fromX"].toDouble(), item["toX"].toDouble(),
-                            item["fromY"].toDouble(), item["toY"].toDouble());
+  auto viewArea = ViewArea(item["fromX"].toDouble(), item["toX"].toDouble(),
+                           item["fromY"].toDouble(), item["toY"].toDouble());
+  this->model.GetChartData()->SetViewArea(viewArea);
 
   mCalculation = FunctionNode(item["calculation"].toString().toStdString());
   mFromCalc = item["fromCalc"].toInt();
@@ -86,13 +83,15 @@ void MainView::initializeChart()
 {
   QChart* chart = new QChart();
 
+  auto viewArea = this->model.GetChartData()->GetViewArea();
+
   QValueAxis* axisX = new QValueAxis();
-  axisX->setRange(viewArea.getFromX(), viewArea.getToX());
+  axisX->setRange(viewArea->getFromX(), viewArea->getToX());
   chart->addAxis(axisX, Qt::AlignBottom);
   this->axisX = axisX;
 
   QValueAxis* axisY = new QValueAxis();
-  axisY->setRange(viewArea.getFromY(), viewArea.getToY());
+  axisY->setRange(viewArea->getFromY(), viewArea->getToY());
   chart->addAxis(axisY, Qt::AlignLeft);
   this->axisY = axisY;
 
@@ -102,177 +101,150 @@ void MainView::initializeChart()
   this->setSeries();
 }
 
-QLineSeries* MainView::addFunctionToChart(FunctionNode* func,
-                                          QList<map<string, double>>& variablesList,
-                                          const string& letter, const QString& name)
+// QLineSeries* MainView::addFunctionToChart(FunctionNode* func,
+//                                           QList<map<string, double>>& variablesList,
+//                                           const string& letter, const QString& name)
+//{
+//   QLineSeries* series = new QLineSeries();
+//   series->setName(name);
+
+//  for (map<string, double>& singleVariables : variablesList)
+//  {
+//    double value = func->getResult(singleVariables);
+//    singleVariables.insert_or_assign(letter, value);
+//    if (value == NAN)
+//    {
+//      continue;
+//    }
+
+//    this->addPointToSeries(series, singleVariables.at(BASE_LETTER), value);
+//  }
+
+//  this->chart->addSeries(series);
+//  series->attachAxis(this->axisX);
+//  series->attachAxis(this->axisY);
+
+//  return series;
+//}
+
+// QLineSeries* MainView::addDerivationToChart(const string& letter,
+//                                             QList<map<string, double>>& variablesList,
+//                                             const string& letterToDerivate, const QString& name)
+//{
+//   QLineSeries* series = new QLineSeries();
+//   series->setName(name);
+
+//  variablesList[0][letter] = NAN;
+
+//  int length = variablesList.count() - 1;
+//  for (int i = 1; i < length; i++)
+//  {
+//    auto lastVars = &variablesList[max(i - 1, 0)];
+//    QPointF last(lastVars->at(BASE_LETTER), lastVars->at(letterToDerivate));
+//    auto nextVars = &variablesList[min(i + 1, length - 1)];
+//    QPointF next(nextVars->at(BASE_LETTER), nextVars->at(letterToDerivate));
+
+//    double value = (next.y() - last.y()) / (next.x() - last.x());
+//    auto thisVars = &variablesList[i];
+//    thisVars->insert_or_assign(letter, value);
+
+//    if (value == NAN)
+//    {
+//      continue;
+//    }
+
+//    this->addPointToSeries(series, thisVars->at(BASE_LETTER), value);
+//  }
+
+//  variablesList[length][letter] = NAN;
+
+//  this->chart->addSeries(series);
+//  series->attachAxis(this->axisX);
+//  series->attachAxis(this->axisY);
+
+//  return series;
+//}
+
+// QList<QLineSeries*>* MainView::addYThresholdToChart(QList<map<string, double>>& variablesList,
+//                                                     const string& letter, double threshold,
+//                                                     const QString& name)
+//{
+//   auto listOfSeries = new QList<QLineSeries*>{};
+//   auto viewArea = this->model.GetViewArea();
+
+//  int length = variablesList.count() - 1;
+//  for (int i = 0; i < length; i++)
+//  {
+//    QLineSeries* series = new QLineSeries();
+//    series->setName(name);
+//    series->setPen(Qt::DashLine);
+
+//    auto lastVars = &variablesList[i];
+//    QPointF last(lastVars->at(BASE_LETTER), lastVars->at(letter));
+//    auto nextVars = &variablesList[i + 1];
+//    QPointF next(nextVars->at(BASE_LETTER), nextVars->at(letter));
+
+//    double intersectionX;
+//    if (!tryFindIntersectionX(last, next, threshold, intersectionX))
+//    {
+//      continue;
+//    }
+
+//    bool inverted = this->ui->invert->isChecked();
+//    this->addPointToSeries(series, intersectionX,
+//                           inverted ? viewArea->getFromX() : viewArea->getFromY());
+//    this->addPointToSeries(series, intersectionX,
+//                           inverted ? viewArea->getToX() : viewArea->getToY());
+
+//    this->chart->addSeries(series);
+//    series->attachAxis(this->axisX);
+//    series->attachAxis(this->axisY);
+
+//    listOfSeries->append(series);
+//  }
+
+//  return listOfSeries;
+//}
+
+// void MainView::addPointToSeries(QXYSeries* series, double x, double y)
+//{
+//   if (!this->ui->invert->isChecked())
+//   {
+//     series->append(x, y);
+//   }
+//   else
+//   {
+//     series->append(y, x);
+//   }
+// }
+
+void MainView::readViewSettings()
 {
-  QLineSeries* series = new QLineSeries();
-  series->setName(name);
-
-  for (map<string, double>& singleVariables : variablesList)
-  {
-    double value = func->getResult(singleVariables);
-    singleVariables.insert_or_assign(letter, value);
-    if (value == NAN)
-    {
-      continue;
-    }
-
-    this->addPointToSeries(series, singleVariables.at(BASE_LETTER), value);
-  }
-
-  this->chart->addSeries(series);
-  series->attachAxis(this->axisX);
-  series->attachAxis(this->axisY);
-
-  return series;
-}
-
-QLineSeries* MainView::addDerivationToChart(const string& letter,
-                                            QList<map<string, double>>& variablesList,
-                                            const string& letterToDerivate, const QString& name)
-{
-  QLineSeries* series = new QLineSeries();
-  series->setName(name);
-
-  variablesList[0][letter] = NAN;
-
-  int length = variablesList.count() - 1;
-  for (int i = 1; i < length; i++)
-  {
-    auto lastVars = &variablesList[max(i - 1, 0)];
-    QPointF last(lastVars->at(BASE_LETTER), lastVars->at(letterToDerivate));
-    auto nextVars = &variablesList[min(i + 1, length - 1)];
-    QPointF next(nextVars->at(BASE_LETTER), nextVars->at(letterToDerivate));
-
-    double value = (next.y() - last.y()) / (next.x() - last.x());
-    auto thisVars = &variablesList[i];
-    thisVars->insert_or_assign(letter, value);
-
-    if (value == NAN)
-    {
-      continue;
-    }
-
-    this->addPointToSeries(series, thisVars->at(BASE_LETTER), value);
-  }
-
-  variablesList[length][letter] = NAN;
-
-  this->chart->addSeries(series);
-  series->attachAxis(this->axisX);
-  series->attachAxis(this->axisY);
-
-  return series;
-}
-
-QList<QLineSeries*>* MainView::addYThresholdToChart(QList<map<string, double>>& variablesList,
-                                                    const string& letter, double threshold,
-                                                    const QString& name)
-{
-  auto listOfSeries = new QList<QLineSeries*>{};
-
-  int length = variablesList.count() - 1;
-  for (int i = 0; i < length; i++)
-  {
-    QLineSeries* series = new QLineSeries();
-    series->setName(name);
-    series->setPen(Qt::DashLine);
-
-    auto lastVars = &variablesList[i];
-    QPointF last(lastVars->at(BASE_LETTER), lastVars->at(letter));
-    auto nextVars = &variablesList[i + 1];
-    QPointF next(nextVars->at(BASE_LETTER), nextVars->at(letter));
-
-    double intersectionX;
-    if (!tryFindIntersectionX(last, next, threshold, intersectionX))
-    {
-      continue;
-    }
-
-    bool inverted = this->ui->invert->isChecked();
-    this->addPointToSeries(series, intersectionX,
-                           inverted ? this->viewArea.getFromX() : this->viewArea.getFromY());
-    this->addPointToSeries(series, intersectionX,
-                           inverted ? this->viewArea.getToX() : this->viewArea.getToY());
-
-    this->chart->addSeries(series);
-    series->attachAxis(this->axisX);
-    series->attachAxis(this->axisY);
-
-    listOfSeries->append(series);
-  }
-
-  return listOfSeries;
-}
-
-void MainView::addPointToSeries(QXYSeries* series, double x, double y)
-{
-  if (!this->ui->invert->isChecked())
-  {
-    series->append(x, y);
-  }
-  else
-  {
-    series->append(y, x);
-  }
+  auto viewArea = this->model.GetChartData()->GetViewArea();
+  this->ui->fromX->setValue(viewArea->getFromX());
+  this->ui->toX->setValue(viewArea->getToX());
+  this->ui->fromY->setValue(viewArea->getFromY());
+  this->ui->toY->setValue(viewArea->getToY());
+  this->ui->invert->setChecked(this->model.GetChartData()->GetIsChartInverted());
+  this->model.GetChartData()->SetViewArea(*viewArea);
 }
 
 void MainView::setSeries()
 {
-  this->viewArea = ViewArea(this->ui->fromX->value(), this->ui->toX->value(),
-                            this->ui->fromY->value(), this->ui->toY->value());
-
-  this->axisX->setRange(this->viewArea.getFromX(), this->viewArea.getToX());
-  this->axisY->setRange(this->viewArea.getFromY(), this->viewArea.getToY());
+  this->readViewSettings();
+  auto viewArea = this->model.GetChartData()->GetViewArea();
+  this->axisX->setRange(viewArea->getFromX(), viewArea->getToX());
+  this->axisY->setRange(viewArea->getFromY(), viewArea->getToY());
 
   this->chart->removeAllSeries();
 
-  bool inverted = this->ui->invert->isChecked();
-  double delta = inverted ? this->viewArea.getHeight() : this->viewArea.getWidth();
-  int resolution = 300;
-  double stepSize = (double)delta / (double)resolution;
+  auto allSeries = this->model.GenerateAllSeries();
 
-  QList<map<string, double>> variablesList;
-  for (int i = 0; i <= resolution; i++)
+  for (auto singleSeries : *allSeries)
   {
-    double r = this->ui->fromX->value() + stepSize * i;
-    variablesList.append(map<string, double>{{BASE_LETTER, r}});
-  }
-
-  QList<FunctionNode*> functions;
-  for (int i = 0; i < this->ui->tableWidget->rowCount(); i++)
-  {
-    auto definition = this->ui->tableWidget->item(i, 2)->text();
-    auto match = derivateRegex.match(definition);
-    if (match.hasMatch())
-    {
-      auto letter = match.captured(1).trimmed();
-      this->addDerivationToChart(this->ui->tableWidget->item(i, 0)->text().toStdString(),
-                                 variablesList, letter.toStdString(),
-                                 this->ui->tableWidget->item(i, 1)->text());
-    }
-    else
-    {
-      auto func = new FunctionNode(definition.toStdString());
-      this->addFunctionToChart(func, variablesList,
-                               this->ui->tableWidget->item(i, 0)->text().toStdString(),
-                               this->ui->tableWidget->item(i, 1)->text());
-      functions.append(func);
-    }
-  }
-
-  for (int i = 0; i < this->ui->yThresholds->rowCount(); i++)
-  {
-    this->addYThresholdToChart(variablesList,
-                               this->ui->yThresholds->item(i, 1)->text().toStdString(),
-                               this->ui->yThresholds->item(i, 2)->text().toDouble(),
-                               this->ui->yThresholds->item(i, 0)->text());
-  }
-
-  for (auto singleFunction : functions)
-  {
-    delete singleFunction;
+    this->chart->addSeries(singleSeries);
+    singleSeries->attachAxis(this->axisX);
+    singleSeries->attachAxis(this->axisY);
   }
 }
 
@@ -297,7 +269,7 @@ void MainView::on_polyEdit_clicked()
   }
 
   auto polyView = new PolyEditView(this);
-  polyView->initialize(this->viewArea);
+  polyView->initialize(*this->model.GetChartData()->GetViewArea());
   polyView->exec();
 
   auto formula = polyView->getFormula();

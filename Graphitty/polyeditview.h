@@ -22,7 +22,7 @@ public:
   void handlePointMove(const QPoint& point);
   void handleMousePress(const QPoint& point);
   void setPointClicked(bool clicked);
-  void initialize(const ViewArea& viewArea);
+  void initialize(ViewArea &viewArea);
   ~PolyEditView();
 
   inline QString getFormula()
