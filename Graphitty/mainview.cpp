@@ -26,7 +26,7 @@ MainView::MainView(QWidget* parent)
   this->model = MainViewModel();
 
   FunctionsTableModel* tableModel = new FunctionsTableModel;
-  //  tableModel.Entries = this->model.GetChartData()->GetFunctionData();
+  tableModel->SetFunctionData(this->model.GetChartData()->GetFunctionData());
   this->ui->testTable->setModel(tableModel);
   this->readViewSettings();
   this->initializeChart();

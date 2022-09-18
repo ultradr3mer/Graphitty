@@ -44,6 +44,11 @@ QVariant FunctionsTableModel::headerData(int section, Qt::Orientation orientatio
   return QVariant(header[section]);
 }
 
+void FunctionsTableModel::SetFunctionData(QList<FunctionData> value)
+{
+  this->entries = value;
+}
+
 QVariant FunctionsTableModel::data(const QModelIndex& index, int role) const
 {
   if (index.column() == 3 && role == Qt::CheckStateRole)
@@ -55,6 +60,17 @@ QVariant FunctionsTableModel::data(const QModelIndex& index, int role) const
 
   if (index.column() != 3 && role == Qt::DisplayRole)
   {
+    auto data = this->entries.at(index.row());
+    switch (index.column())
+    {
+    case 0:
+      return QVariant(*data.GetLetter());
+    case 1:
+      return QVariant(*data.GetName());
+    case 2:
+      return QVariant(*data.GetDefinition());
+    }
+
     return QVariant("a");
   }
 
