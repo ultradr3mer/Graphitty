@@ -45,17 +45,8 @@ private:
   QValueAxis* axisX;
   QValueAxis* axisY;
   MainViewModel model;
-
-  //  QLineSeries* addFunctionToChart(FunctionNode* func, QList<map<string, double>>& variablesList,
-  //                                  const string& letter, const QString& name);
-  //  QLineSeries* addDerivationToChart(const string& letter, QList<map<string, double>>&
-  //  variablesList,
-  //                                    const string& letterToDerivate, const QString& name);
-  //  QList<QLineSeries*>* addYThresholdToChart(QList<map<string, double>>& variablesList,
-  //                                            const string& letter, double threshold,
-  //                                            const QString& name);
-
   void readViewSettings();
+  void writeViewSettings();
 };
 
 #endif // MAINVIEW_H

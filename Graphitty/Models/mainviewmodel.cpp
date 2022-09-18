@@ -28,6 +28,7 @@ ChartData initializeDefaultChartData()
     FunctionData singleCopy(singleEntry);
     copy.append(singleCopy);
   }
+  result.SetFunctionData(copy);
 
   return result;
 }
@@ -64,9 +65,8 @@ QList<QLineSeries*>* MainViewModel::GenerateAllSeries()
     if (match.hasMatch())
     {
       auto letter = match.captured(1).trimmed();
-      this->CalculateDerivation(letter.toStdString(), variablesList,
-                                singleEnty.GetLetter()->toStdString(), singleEnty.GetName(),
-                                result);
+      this->CalculateDerivation(singleEnty.GetLetter()->toStdString(), variablesList,
+                                letter.toStdString(), singleEnty.GetName(), result);
     }
     else
     {

@@ -1,10 +1,12 @@
 #include <QAbstractTableModel>
 
-class MyModel : public QAbstractTableModel
+#include <Data/functiondata.h>
+
+class FunctionsTableModel : public QAbstractTableModel
 {
   Q_OBJECT
 public:
-  explicit MyModel(QObject* parent = nullptr);
+  explicit FunctionsTableModel(QObject* parent = nullptr);
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const override;
   int columnCount(const QModelIndex& parent = QModelIndex()) const override;
@@ -12,4 +14,7 @@ public:
   Qt::ItemFlags flags(const QModelIndex& index) const override;
   QVariant headerData(int section, Qt::Orientation orientation,
                       int role = Qt::DisplayRole) const override;
+
+private:
+  QList<FunctionData> entries;
 };
