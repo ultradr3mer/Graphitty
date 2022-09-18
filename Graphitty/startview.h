@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QMainWindow>
 
+#include <QJsonArray>
+
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
@@ -18,6 +20,7 @@ class StartView : public QDialog
 public:
   StartView(QWidget* parent = nullptr);
   ~StartView();
+  QJsonArray collectRecentProjects();
   void newProject();
 
   inline QString getFileName()

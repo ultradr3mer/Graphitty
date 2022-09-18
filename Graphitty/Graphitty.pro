@@ -25,6 +25,7 @@ SOURCES += \
     mainview.cpp \
     polyeditchartview.cpp \
     polyeditview.cpp \
+    sheetmanager.cpp \
     startview.cpp \
     viewarea.cpp
 
@@ -44,6 +45,7 @@ HEADERS += \
     mainview.h \
     polyeditchartview.h \
     polyeditview.h \
+    sheetmanager.h \
     startview.h \
     viewarea.h
 
@@ -63,4 +65,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    testfile.json
+    recent.json \
+    testfile.json \
+    testjson.json
