@@ -140,30 +140,30 @@ void MainView::setSeries()
 
 void MainView::on_polyEdit_clicked()
 {
-  int row = -1;
-  for (QTableWidgetItem* item : this->ui->tableWidget->selectedItems())
-  {
-    row = item->row();
-    break;
-  }
+  //  int row = -1;
+  //  for (QTableWidgetItem* item : this->ui->tableWidget->selectedItems())
+  //  {
+  //    row = item->row();
+  //    break;
+  //  }
 
-  if (row == -1)
-  {
-    QMessageBox msgBox;
-    msgBox.setText("No Row Selected.");
-    msgBox.setInformativeText("Please select a row that you want to generate an equation for.");
-    msgBox.setStandardButtons(QMessageBox::Ok);
-    msgBox.setDefaultButton(QMessageBox::Ok);
-    msgBox.exec();
-    return;
-  }
+  //  if (row == -1)
+  //  {
+  //    QMessageBox msgBox;
+  //    msgBox.setText("No Row Selected.");
+  //    msgBox.setInformativeText("Please select a row that you want to generate an equation for.");
+  //    msgBox.setStandardButtons(QMessageBox::Ok);
+  //    msgBox.setDefaultButton(QMessageBox::Ok);
+  //    msgBox.exec();
+  //    return;
+  //  }
 
-  auto polyView = new PolyEditView(this);
-  polyView->initialize(*this->model.GetChartData()->GetViewArea());
-  polyView->exec();
+  //  auto polyView = new PolyEditView(this);
+  //  polyView->initialize(*this->model.GetChartData()->GetViewArea());
+  //  polyView->exec();
 
-  auto formula = polyView->getFormula();
-  this->ui->tableWidget->item(row, 2)->setText(formula);
+  //  auto formula = polyView->getFormula();
+  //  this->ui->tableWidget->item(row, 2)->setText(formula);
 }
 
 void MainView::on_actionSpeichern_unter_triggered()

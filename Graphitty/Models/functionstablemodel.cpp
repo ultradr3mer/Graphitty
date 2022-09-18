@@ -11,7 +11,7 @@ FunctionsTableModel::FunctionsTableModel(QObject* parent) : QAbstractTableModel(
 
 int FunctionsTableModel::rowCount(const QModelIndex& /*parent*/) const
 {
-  return 2;
+  return this->entries.count();
 }
 
 int FunctionsTableModel::columnCount(const QModelIndex& /*parent*/) const
