@@ -15,8 +15,8 @@ public:
   QVariant headerData(int section, Qt::Orientation orientation,
                       int role = Qt::DisplayRole) const override;
   bool setData(const QModelIndex& index, const QVariant& value, int role) override;
-  void SetFunctionData(QList<FunctionData> value);
+  void SetFunctionData(QList<FunctionData>* value);
 
 private:
-  QList<FunctionData> entries;
+  QList<FunctionData>* entries;
 };

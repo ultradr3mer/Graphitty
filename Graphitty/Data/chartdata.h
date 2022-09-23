@@ -2,6 +2,7 @@
 #define VIEWDATA_H
 
 #include "functiondata.h"
+#include "thresholddata.h"
 
 #include <QList>
 #include <viewarea.h>
@@ -32,19 +33,29 @@ public:
     this->viewArea = value;
   }
 
-  inline QList<FunctionData> GetFunctionData()
+  inline QList<FunctionData>* GetFunctionData()
   {
-    return this->functionData;
+    return &this->functionData;
   }
-  inline void SetFunctionData(QList<FunctionData> value)
+  inline void SetFunctionData(QList<FunctionData>& value)
   {
     this->functionData = value;
+  }
+
+  inline QList<ThresholdData>* GetThresholdData()
+  {
+    return &this->thresholdData;
+  }
+  inline void SetThresholdData(QList<ThresholdData>& value)
+  {
+    this->thresholdData = value;
   }
 
 private:
   bool isChartInverted;
   ViewArea viewArea;
   QList<FunctionData> functionData;
+  QList<ThresholdData> thresholdData;
 };
 
 #endif // VIEWDATA_H

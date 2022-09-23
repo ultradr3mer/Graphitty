@@ -11,7 +11,7 @@ FunctionsTableModel::FunctionsTableModel(QObject* parent) : QAbstractTableModel(
 
 int FunctionsTableModel::rowCount(const QModelIndex& /*parent*/) const
 {
-  return this->entries.count();
+  return this->entries->count();
 }
 
 int FunctionsTableModel::columnCount(const QModelIndex& /*parent*/) const
@@ -48,39 +48,47 @@ bool FunctionsTableModel::setData(const QModelIndex& index, const QVariant& valu
   case Qt::EditRole:
     if (index.column() == 0)
     {
-      this->entries[index.row()].setLetter(value.toString());
+      auto data = this->entries->at(index.row());
+      data.setLetter(value.toString());
+      this->entries->replace(index.row(), data);
       return true;
     }
     else if (index.column() == 1)
     {
-      this->entries[index.row()].setName(value.toString());
+      auto data = this->entries->at(index.row());
+      data.setName(value.toString());
+      this->entries->replace(index.row(), data);
       return true;
     }
     else if (index.column() == 2)
     {
-      this->entries[index.row()].setDefinition(value.toString());
+      auto data = this->entries->at(index.row());
+      data.setDefinition(value.toString());
+      this->entries->replace(index.row(), data);
       return true;
     }
 
   case Qt::CheckStateRole:
     if (index.column() == 3)
     {
+      auto data = this->entries->at(index.row());
       bool checked = value == Qt::Checked;
-      this->entries[index.row()].setIsShown(checked);
+      data.setIsShown(checked);
+      this->entries->replace(index.row(), data);
       return true;
     }
   }
   return false;
 }
 
-void FunctionsTableModel::SetFunctionData(QList<FunctionData> value)
+void FunctionsTableModel::SetFunctionData(QList<FunctionData>* value)
 {
   this->entries = value;
 }
 
 QVariant FunctionsTableModel::data(const QModelIndex& index, int role) const
 {
-  FunctionData data = this->entries.at(index.row());
+  FunctionData data = this->entries->at(index.row());
   switch (role)
   {
   case Qt::DisplayRole:

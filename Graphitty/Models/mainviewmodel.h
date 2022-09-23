@@ -24,15 +24,20 @@ public:
   }
 
   QList<QLineSeries*>* GenerateAllSeries();
+  void OpenPolyEdit(int row, QWidget* parent);
 
 private:
-  void CalculateFunction(FunctionNode *func, QList<map<string, double>>& variablesList,
-                         const string& letter, QString* name, QList<QLineSeries*>* out);
+  void CalculateFunction(FunctionNode* func, QList<map<string, double>>& variablesList,
+                         const string& letter, QString* name, bool isVisible,
+                         QList<QLineSeries*>* out);
   void CalculateDerivation(const string& letter, QList<map<string, double>>& variablesList,
-                           const string& letterToDerivate, QString* name, QList<QLineSeries*>* out);
-  //  void CalculateYThresshold(FunctionNode* func, QList<map<string, double>>& variablesList,
-  //                            string& letter, const QString& name, QList<QLineSeries*>& out);
-  void AddPointToSeries(QXYSeries* series, double x, double y);
+                           const string& letterToDerivate, QString* name, bool isVisible,
+                           QList<QLineSeries*>* out);
+  void CalculateYThresshold(const string& letter, QList<map<string, double>>& variablesList,
+                            QString* name, bool isVisible, double threshold,
+                            QList<QLineSeries*>* out);
+  void addPointToSeries(QXYSeries* series, double x, double y);
+  bool tryFindIntersectionX(QPointF a, QPointF b, double threshold, double& intersectionX);
 
   ChartData chartData;
 };

@@ -1,5 +1,4 @@
 #include "mainview.h"
-#include "polyeditview.h"
 #include "ui_mainview.h"
 
 #include "FunctionParser/functionnode.h"
@@ -27,7 +26,7 @@ MainView::MainView(QWidget* parent)
 
   FunctionsTableModel* tableModel = new FunctionsTableModel;
   tableModel->SetFunctionData(this->model.GetChartData()->GetFunctionData());
-  this->ui->testTable->setModel(tableModel);
+  this->ui->functions->setModel(tableModel);
   this->readViewSettings();
   this->initializeChart();
 }
@@ -63,19 +62,6 @@ void MainView::openProject(const QString& fileName)
   mImported = true;
 
   this->initializeChart();
-}
-
-bool tryFindIntersectionX(QPointF a, QPointF b, double threshold, double& intersectionX)
-{
-  if ((a.y() > threshold) == (b.y() > threshold))
-  {
-    return false;
-  }
-
-  float lambda = (threshold - b.y()) / (a.y() - b.y());
-  intersectionX = (lambda * a + (1 - lambda) * b).x();
-
-  return true;
 }
 
 void MainView::initializeChart()
@@ -140,30 +126,19 @@ void MainView::setSeries()
 
 void MainView::on_polyEdit_clicked()
 {
-  //  int row = -1;
-  //  for (QTableWidgetItem* item : this->ui->tableWidget->selectedItems())
-  //  {
-  //    row = item->row();
-  //    break;
-  //  }
+  auto selection = this->ui->functions->selectionModel();
+  if (!selection->hasSelection())
+  {
+    QMessageBox msgBox;
+    msgBox.setText("No Row Selected.");
+    msgBox.setInformativeText("Please select a row that you want to generate an equation for.");
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    msgBox.exec();
+    return;
+  }
 
-  //  if (row == -1)
-  //  {
-  //    QMessageBox msgBox;
-  //    msgBox.setText("No Row Selected.");
-  //    msgBox.setInformativeText("Please select a row that you want to generate an equation for.");
-  //    msgBox.setStandardButtons(QMessageBox::Ok);
-  //    msgBox.setDefaultButton(QMessageBox::Ok);
-  //    msgBox.exec();
-  //    return;
-  //  }
-
-  //  auto polyView = new PolyEditView(this);
-  //  polyView->initialize(*this->model.GetChartData()->GetViewArea());
-  //  polyView->exec();
-
-  //  auto formula = polyView->getFormula();
-  //  this->ui->tableWidget->item(row, 2)->setText(formula);
+  this->model.OpenPolyEdit(selection->currentIndex().row(), this);
 }
 
 void MainView::on_actionSpeichern_unter_triggered()
@@ -187,7 +162,6 @@ void MainView::on_update_clicked()
   }
   catch (FunctionParserException e)
   {
-    // ui->textEdit->setPlainText(e.getMessage().c_str());
     QMessageBox::information(this, "The function contains an error.", e.getMessage().c_str(),
                              QMessageBox::Ok);
   }

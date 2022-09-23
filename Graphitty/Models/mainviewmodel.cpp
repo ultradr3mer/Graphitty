@@ -1,6 +1,7 @@
 #include "mainviewmodel.h"
 #include "qregularexpression.h"
 #include <Data/functiondata.h>
+#include <polyeditview.h>
 
 const string BASE_LETTER = "r";
 
@@ -22,14 +23,22 @@ ChartData initializeDefaultChartData()
       FunctionData("e", "Durschnittsertrag", "x/r", true),
       FunctionData("e'", "Ableitung", "derivate(e)", false),
   };
-  auto copy = QList<FunctionData>();
+
   for (auto singleEntry : defaultFunktionen)
   {
     FunctionData singleCopy(singleEntry);
-    copy.append(singleCopy);
+    result.GetFunctionData()->append(singleCopy);
   }
-  result.SetFunctionData(copy);
 
+  ThresholdData defaultThresholds[] = {ThresholdData("Übergang Phase 1 zu 2", "x''", 0.0, true),
+                                       ThresholdData("Übergang Phase 2 zu 3", "e'", 0.0, true),
+                                       ThresholdData("Übergang Phase 3 zu 4", "x'", 0.0, true)};
+
+  for (auto singleEntry : defaultThresholds)
+  {
+    ThresholdData singleCopy(singleEntry);
+    result.GetThresholdData()->append(singleCopy);
+  }
   return result;
 }
 
@@ -56,43 +65,68 @@ QList<QLineSeries*>* MainViewModel::GenerateAllSeries()
   }
 
   auto result = new QList<QLineSeries*>();
-  auto functionData = this->chartData.GetFunctionData();
-  for (auto& singleEnty : functionData)
+  int length = this->chartData.GetFunctionData()->count();
+  for (int i = 0; i < length; ++i)
   {
-    auto definition = *singleEnty.getDefinition();
-    auto match = derivateRegex.match(definition);
+    FunctionData singleEnty = this->chartData.GetFunctionData()->at(i);
+
+    QString definition = *singleEnty.getDefinition();
+    QRegularExpressionMatch match = derivateRegex.match(definition);
 
     if (match.hasMatch())
     {
-      auto letter = match.captured(1).trimmed();
+      QString letter = match.captured(1).trimmed();
       this->CalculateDerivation(singleEnty.getLetter()->toStdString(), variablesList,
-                                letter.toStdString(), singleEnty.getName(), result);
+                                letter.toStdString(), singleEnty.getName(), singleEnty.getIsShown(),
+                                result);
     }
     else
     {
-      auto func = new FunctionNode(definition.toStdString());
+      FunctionNode* func = new FunctionNode(definition.toStdString());
       this->CalculateFunction(func, variablesList, singleEnty.getLetter()->toStdString(),
-                              singleEnty.getDefinition(), result);
+                              singleEnty.getDefinition(), singleEnty.getIsShown(), result);
       delete func;
     }
   }
 
-  //  for (int i = 0; i < this->ui->yThresholds->rowCount(); i++)
-  //  {
-  //    this->CalculateYThresshold(variablesList,
-  //                               this->ui->yThresholds->item(i, 1)->text().toStdString(),
-  //                               this->ui->yThresholds->item(i, 2)->text().toDouble(),
-  //                               this->ui->yThresholds->item(i, 0)->text());
-  //  }
+  length = this->chartData.GetThresholdData()->count();
+  for (int i = 0; i < length; i++)
+  {
+    ThresholdData singleEnty = this->chartData.GetThresholdData()->at(i);
+
+    this->CalculateYThresshold(singleEnty.getLetter()->toStdString(), variablesList,
+                               singleEnty.getName(), singleEnty.getIsShown(),
+                               singleEnty.getThreshold(), result);
+  }
 
   return result;
 }
 
-void MainViewModel::CalculateFunction(FunctionNode* func, QList<map<string, double>>& variablesList,
-                                      const string& letter, QString* name, QList<QLineSeries*>* out)
+void MainViewModel::OpenPolyEdit(int row, QWidget* parent)
 {
-  QLineSeries* series = new QLineSeries();
-  series->setName(*name);
+  PolyEditView* polyView = new PolyEditView(parent);
+  polyView->initialize(*this->GetChartData()->GetViewArea());
+  polyView->exec();
+
+  QString formula = polyView->getFormula();
+
+  QList<FunctionData>* entries = this->GetChartData()->GetFunctionData();
+
+  FunctionData data = entries->at(row);
+  data.setDefinition(formula);
+  entries->replace(row, data);
+}
+
+void MainViewModel::CalculateFunction(FunctionNode* func, QList<map<string, double>>& variablesList,
+                                      const string& letter, QString* name, bool isVisible,
+                                      QList<QLineSeries*>* out)
+{
+  QLineSeries* series;
+  if (isVisible)
+  {
+    series = new QLineSeries();
+    series->setName(*name);
+  }
 
   for (map<string, double>& singleVariables : variablesList)
   {
@@ -103,19 +137,29 @@ void MainViewModel::CalculateFunction(FunctionNode* func, QList<map<string, doub
       continue;
     }
 
-    this->AddPointToSeries(series, singleVariables.at(BASE_LETTER), value);
+    if (isVisible)
+    {
+      this->addPointToSeries(series, singleVariables.at(BASE_LETTER), value);
+    }
   }
 
-  out->append(series);
+  if (isVisible)
+  {
+    out->append(series);
+  }
 }
 
 void MainViewModel::CalculateDerivation(const string& letter,
                                         QList<map<string, double>>& variablesList,
                                         const string& letterToDerivate, QString* name,
-                                        QList<QLineSeries*>* out)
+                                        bool isVisible, QList<QLineSeries*>* out)
 {
-  QLineSeries* series = new QLineSeries();
-  series->setName(*name);
+  QLineSeries* series;
+  if (isVisible)
+  {
+    series = new QLineSeries();
+    series->setName(*name);
+  }
 
   variablesList[0][letter] = NAN;
 
@@ -136,15 +180,62 @@ void MainViewModel::CalculateDerivation(const string& letter,
       continue;
     }
 
-    this->AddPointToSeries(series, thisVars->at(BASE_LETTER), value);
+    if (isVisible)
+    {
+      this->addPointToSeries(series, thisVars->at(BASE_LETTER), value);
+    }
   }
 
   variablesList[length][letter] = NAN;
 
-  out->append(series);
+  if (isVisible)
+  {
+    out->append(series);
+  }
 }
 
-void MainViewModel::AddPointToSeries(QXYSeries* series, double x, double y)
+void MainViewModel::CalculateYThresshold(const string& letter,
+                                         QList<map<string, double>>& variablesList, QString* name,
+                                         bool isVisible, double threshold, QList<QLineSeries*>* out)
+{
+  ViewArea* viewArea = this->GetChartData()->GetViewArea();
+
+  int length = variablesList.count() - 1;
+  for (int i = 0; i < length; i++)
+  {
+    QLineSeries* series;
+    if (isVisible)
+    {
+      series = new QLineSeries();
+      series->setName(*name);
+      series->setPen(Qt::DashLine);
+    }
+
+    auto lastVars = &variablesList[i];
+    QPointF last(lastVars->at(BASE_LETTER), lastVars->at(letter));
+    auto nextVars = &variablesList[i + 1];
+    QPointF next(nextVars->at(BASE_LETTER), nextVars->at(letter));
+
+    double intersectionX;
+    if (!tryFindIntersectionX(last, next, threshold, intersectionX))
+    {
+      continue;
+    }
+
+    bool inverted = this->GetChartData()->GetIsChartInverted();
+    if (isVisible)
+    {
+      this->addPointToSeries(series, intersectionX,
+                             inverted ? viewArea->getFromX() : viewArea->getFromY());
+      this->addPointToSeries(series, intersectionX,
+                             inverted ? viewArea->getToX() : viewArea->getToY());
+    }
+
+    out->append(series);
+  }
+}
+
+void MainViewModel::addPointToSeries(QXYSeries* series, double x, double y)
 {
   if (!this->chartData.GetIsChartInverted())
   {
@@ -154,4 +245,18 @@ void MainViewModel::AddPointToSeries(QXYSeries* series, double x, double y)
   {
     series->append(y, x);
   }
+}
+
+bool MainViewModel::tryFindIntersectionX(QPointF a, QPointF b, double threshold,
+                                         double& intersectionX)
+{
+  if ((a.y() > threshold) == (b.y() > threshold))
+  {
+    return false;
+  }
+
+  float lambda = (threshold - b.y()) / (a.y() - b.y());
+  intersectionX = (lambda * a + (1 - lambda) * b).x();
+
+  return true;
 }
