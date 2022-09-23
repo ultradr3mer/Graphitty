@@ -27,8 +27,8 @@ MainView::MainView(QWidget* parent)
   this->model = MainViewModel();
   this->mSheetManager = SheetManager();
 
-  FunctionsTableModel* tableModel = new FunctionsTableModel;
-  tableModel->SetFunctionData(this->model.getChartData()->setFunctionData());
+  auto tableModel = new FunctionsTableModel();
+  tableModel->SetFunctionData(this->model.getChartData()->getFunctionData());
   this->ui->functions->setModel(tableModel);
   this->readViewSettings();
   this->initializeChart();
@@ -45,7 +45,7 @@ void MainView::openProject(const QString& fileName)
   ChartData loadedData = this->mSheetManager.loadSheet();
   QJsonArray tree = this->mSheetManager.getSheetTree(); // Debug
   this->addRecentProject();
-  this->model.SetChartData(loadedData);
+  this->model.setChartData(loadedData);
   this->readViewSettings();
   this->initializeChart();
 }
@@ -112,37 +112,37 @@ void MainView::setSeries()
 
 void MainView::addRecentProject()
 {
-    QString val;
-    QFile file;
-    //QString fileName = QFileDialog::getOpenFileName(this, tr("Open Recent"), "/home", tr("Json Files (*.json)"));
-    QString fileName = "recent.json";
-    QJsonArray lastProjects = {};
+  QString val;
+  QFile file;
+  // QString fileName = QFileDialog::getOpenFileName(this, tr("Open Recent"), "/home", tr("Json
+  // Files (*.json)"));
+  QString fileName = "recent.json";
+  QJsonArray lastProjects = {};
 
-    file.setFileName(fileName);
+  file.setFileName(fileName);
 
-    if(QFileInfo::exists(fileName)) {
-        file.open(QIODevice::ReadOnly | QIODevice::Text);
-        val = file.readAll();
-        file.close();
+  if (QFileInfo::exists(fileName))
+  {
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    val = file.readAll();
+    file.close();
 
-        QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
-        QJsonObject values = doc.object();
+    QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
+    QJsonObject values = doc.object();
 
-        QJsonArray projects = values["projects"].toArray();
-        projects.append(this->mSheetManager.GetProjectPath());
+    QJsonArray projects = values["projects"].toArray();
+    projects.append(this->mSheetManager.GetProjectPath());
 
-        auto recentProjects = QJsonObject(
-            {
-                qMakePair(QString("projects"), projects),
-             });
+    auto recentProjects = QJsonObject({
+        qMakePair(QString("projects"), projects),
+    });
 
-        doc.setObject(recentProjects);
+    doc.setObject(recentProjects);
 
-        file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
-        file.write(doc.toJson());
-        file.close();
-
-    }
+    file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
+    file.write(doc.toJson());
+    file.close();
+  }
 }
 
 void MainView::on_polyEdit_clicked()
@@ -164,23 +164,27 @@ void MainView::on_polyEdit_clicked()
 
 void MainView::on_actionSpeichern_unter_triggered()
 {
-    auto fileName = QFileDialog::getSaveFileName(this, tr("Save Project to"), "/home", tr("Json Files (*.json)"));
-    this->mSheetManager.saveProjectToFile(this->model.GetChartData(), fileName);
-    this->addRecentProject();
+  auto fileName =
+      QFileDialog::getSaveFileName(this, tr("Save Project to"), "/home", tr("Json Files (*.json)"));
+  this->mSheetManager.saveProjectToFile(this->model.getChartData(), fileName);
+  this->addRecentProject();
 }
 
 void MainView::on_actionSpeichern_triggered()
 {
-    if (this->mSheetManager.checkForExistingProject()) {
-        this->mSheetManager.saveProjectToFile(this->model.GetChartData(), this->mSheetManager.GetProjectPath());
-    } else {
-        this->on_actionSpeichern_unter_triggered();
-    }
+  if (this->mSheetManager.checkForExistingProject())
+  {
+    this->mSheetManager.saveProjectToFile(this->model.getChartData(),
+                                          this->mSheetManager.GetProjectPath());
+  }
+  else
+  {
+    this->on_actionSpeichern_unter_triggered();
+  }
 }
 
 void MainView::on_actionProjektmappe_schlie_en_triggered()
 {
-
 }
 
 void MainView::on_update_clicked()

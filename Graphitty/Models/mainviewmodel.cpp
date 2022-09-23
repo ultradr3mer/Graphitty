@@ -27,7 +27,7 @@ ChartData initializeDefaultChartData()
   for (auto singleEntry : defaultFunktionen)
   {
     FunctionData singleCopy(singleEntry);
-    result.setFunctionData()->append(singleCopy);
+    result.getFunctionData()->append(singleCopy);
   }
 
   ThresholdData defaultThresholds[] = {ThresholdData("Übergang Phase 1 zu 2", "x''", 0.0, true),
@@ -65,10 +65,10 @@ QList<QLineSeries*>* MainViewModel::generateAllSeries()
   }
 
   auto result = new QList<QLineSeries*>();
-  int length = this->chartData.setFunctionData()->count();
+  int length = this->chartData.getFunctionData()->count();
   for (int i = 0; i < length; ++i)
   {
-    FunctionData singleEnty = this->chartData.setFunctionData()->at(i);
+    FunctionData singleEnty = this->chartData.getFunctionData()->at(i);
 
     QString definition = *singleEnty.getDefinition();
     QRegularExpressionMatch match = derivateRegex.match(definition);
@@ -110,7 +110,7 @@ void MainViewModel::openPolyEdit(int row, QWidget* parent)
 
   QString formula = polyView->getFormula();
 
-  QList<FunctionData>* entries = this->getChartData()->setFunctionData();
+  QList<FunctionData>* entries = this->getChartData()->getFunctionData();
 
   FunctionData data = entries->at(row);
   data.setDefinition(formula);

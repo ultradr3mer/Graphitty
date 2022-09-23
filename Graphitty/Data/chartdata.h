@@ -33,7 +33,7 @@ public:
     this->viewArea = value;
   }
 
-  inline QList<FunctionData>* setFunctionData()
+  inline QList<FunctionData>* getFunctionData()
   {
     return &this->functionData;
   }
