@@ -14,26 +14,26 @@ class MainViewModel
 public:
   MainViewModel();
 
-  inline ChartData* GetChartData()
+  inline ChartData* getChartData()
   {
     return &this->chartData;
   }
-  inline void SetChartData(ChartData& value)
+  inline void setChartData(ChartData& value)
   {
     this->chartData = value;
   }
 
-  QList<QLineSeries*>* GenerateAllSeries();
-  void OpenPolyEdit(int row, QWidget* parent);
+  QList<QLineSeries*>* generateAllSeries();
+  void openPolyEdit(int row, QWidget* parent);
 
 private:
-  void CalculateFunction(FunctionNode* func, QList<map<string, double>>& variablesList,
+  void calculateFunction(FunctionNode* func, QList<map<string, double>>& variablesList,
                          const string& letter, QString* name, bool isVisible,
                          QList<QLineSeries*>* out);
-  void CalculateDerivation(const string& letter, QList<map<string, double>>& variablesList,
+  void calculateDerivation(const string& letter, QList<map<string, double>>& variablesList,
                            const string& letterToDerivate, QString* name, bool isVisible,
                            QList<QLineSeries*>* out);
-  void CalculateYThresshold(const string& letter, QList<map<string, double>>& variablesList,
+  void calculateYThresshold(const string& letter, QList<map<string, double>>& variablesList,
                             QString* name, bool isVisible, double threshold,
                             QList<QLineSeries*>* out);
   void addPointToSeries(QXYSeries* series, double x, double y);

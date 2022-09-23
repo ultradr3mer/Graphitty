@@ -25,7 +25,7 @@ MainView::MainView(QWidget* parent)
   this->model = MainViewModel();
 
   FunctionsTableModel* tableModel = new FunctionsTableModel;
-  tableModel->SetFunctionData(this->model.GetChartData()->GetFunctionData());
+  tableModel->SetFunctionData(this->model.getChartData()->setFunctionData());
   this->ui->functions->setModel(tableModel);
   this->readViewSettings();
   this->initializeChart();
@@ -68,7 +68,7 @@ void MainView::initializeChart()
 {
   QChart* chart = new QChart();
 
-  auto viewArea = this->model.GetChartData()->GetViewArea();
+  auto viewArea = this->model.getChartData()->getViewArea();
 
   QValueAxis* axisX = new QValueAxis();
   axisX->setRange(viewArea->getFromX(), viewArea->getToX());
@@ -88,33 +88,33 @@ void MainView::initializeChart()
 
 void MainView::readViewSettings()
 {
-  auto viewArea = this->model.GetChartData()->GetViewArea();
+  auto viewArea = this->model.getChartData()->getViewArea();
   this->ui->fromX->setValue(viewArea->getFromX());
   this->ui->toX->setValue(viewArea->getToX());
   this->ui->fromY->setValue(viewArea->getFromY());
   this->ui->toY->setValue(viewArea->getToY());
-  this->ui->invert->setChecked(this->model.GetChartData()->GetIsChartInverted());
-  this->model.GetChartData()->SetViewArea(*viewArea);
+  this->ui->invert->setChecked(this->model.getChartData()->getIsChartInverted());
+  this->model.getChartData()->setViewArea(*viewArea);
 }
 
 void MainView::writeViewSettings()
 {
   auto viewArea = ViewArea(this->ui->fromX->value(), this->ui->toX->value(),
                            this->ui->fromY->value(), this->ui->toY->value());
-  this->model.GetChartData()->SetViewArea(viewArea);
-  this->model.GetChartData()->SetIsChartInverted(this->ui->invert->isChecked());
+  this->model.getChartData()->setViewArea(viewArea);
+  this->model.getChartData()->setIsChartInverted(this->ui->invert->isChecked());
 }
 
 void MainView::setSeries()
 {
   this->writeViewSettings();
-  auto viewArea = this->model.GetChartData()->GetViewArea();
+  auto viewArea = this->model.getChartData()->getViewArea();
   this->axisX->setRange(viewArea->getFromX(), viewArea->getToX());
   this->axisY->setRange(viewArea->getFromY(), viewArea->getToY());
 
   this->chart->removeAllSeries();
 
-  auto allSeries = this->model.GenerateAllSeries();
+  auto allSeries = this->model.generateAllSeries();
 
   for (auto singleSeries : *allSeries)
   {
@@ -138,7 +138,7 @@ void MainView::on_polyEdit_clicked()
     return;
   }
 
-  this->model.OpenPolyEdit(selection->currentIndex().row(), this);
+  this->model.openPolyEdit(selection->currentIndex().row(), this);
 }
 
 void MainView::on_actionSpeichern_unter_triggered()

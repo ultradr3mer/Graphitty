@@ -11,10 +11,10 @@ QRegularExpression derivateRegex("^derivate\\((.*?)\\)$",
 ChartData initializeDefaultChartData()
 {
   ChartData result;
-  result.SetIsChartInverted(false);
+  result.setIsChartInverted(false);
 
   ViewArea va(0.0, 7.0, 0.0, 60.0);
-  result.SetViewArea(va);
+  result.setViewArea(va);
 
   FunctionData defaultFunktionen[] = {
       FunctionData("x", "Produktionsfunktion", "6(r+r^2)-r^3", true),
@@ -27,7 +27,7 @@ ChartData initializeDefaultChartData()
   for (auto singleEntry : defaultFunktionen)
   {
     FunctionData singleCopy(singleEntry);
-    result.GetFunctionData()->append(singleCopy);
+    result.setFunctionData()->append(singleCopy);
   }
 
   ThresholdData defaultThresholds[] = {ThresholdData("Übergang Phase 1 zu 2", "x''", 0.0, true),
@@ -37,7 +37,7 @@ ChartData initializeDefaultChartData()
   for (auto singleEntry : defaultThresholds)
   {
     ThresholdData singleCopy(singleEntry);
-    result.GetThresholdData()->append(singleCopy);
+    result.getThresholdData()->append(singleCopy);
   }
   return result;
 }
@@ -45,15 +45,15 @@ ChartData initializeDefaultChartData()
 MainViewModel::MainViewModel()
 {
   auto defaultData = initializeDefaultChartData();
-  this->SetChartData(defaultData);
+  this->setChartData(defaultData);
 }
 
-QList<QLineSeries*>* MainViewModel::GenerateAllSeries()
+QList<QLineSeries*>* MainViewModel::generateAllSeries()
 {
-  double delta = this->chartData.GetIsChartInverted() ? this->chartData.GetViewArea()->getHeight()
-                                                      : this->chartData.GetViewArea()->getWidth();
-  double from = this->chartData.GetIsChartInverted() ? this->chartData.GetViewArea()->getFromY()
-                                                     : this->chartData.GetViewArea()->getFromX();
+  double delta = this->chartData.getIsChartInverted() ? this->chartData.getViewArea()->getHeight()
+                                                      : this->chartData.getViewArea()->getWidth();
+  double from = this->chartData.getIsChartInverted() ? this->chartData.getViewArea()->getFromY()
+                                                     : this->chartData.getViewArea()->getFromX();
   int resolution = 300;
   double stepSize = (double)delta / (double)resolution;
 
@@ -65,10 +65,10 @@ QList<QLineSeries*>* MainViewModel::GenerateAllSeries()
   }
 
   auto result = new QList<QLineSeries*>();
-  int length = this->chartData.GetFunctionData()->count();
+  int length = this->chartData.setFunctionData()->count();
   for (int i = 0; i < length; ++i)
   {
-    FunctionData singleEnty = this->chartData.GetFunctionData()->at(i);
+    FunctionData singleEnty = this->chartData.setFunctionData()->at(i);
 
     QString definition = *singleEnty.getDefinition();
     QRegularExpressionMatch match = derivateRegex.match(definition);
@@ -76,25 +76,25 @@ QList<QLineSeries*>* MainViewModel::GenerateAllSeries()
     if (match.hasMatch())
     {
       QString letter = match.captured(1).trimmed();
-      this->CalculateDerivation(singleEnty.getLetter()->toStdString(), variablesList,
+      this->calculateDerivation(singleEnty.getLetter()->toStdString(), variablesList,
                                 letter.toStdString(), singleEnty.getName(), singleEnty.getIsShown(),
                                 result);
     }
     else
     {
       FunctionNode* func = new FunctionNode(definition.toStdString());
-      this->CalculateFunction(func, variablesList, singleEnty.getLetter()->toStdString(),
-                              singleEnty.getDefinition(), singleEnty.getIsShown(), result);
+      this->calculateFunction(func, variablesList, singleEnty.getLetter()->toStdString(),
+                              singleEnty.getName(), singleEnty.getIsShown(), result);
       delete func;
     }
   }
 
-  length = this->chartData.GetThresholdData()->count();
+  length = this->chartData.getThresholdData()->count();
   for (int i = 0; i < length; i++)
   {
-    ThresholdData singleEnty = this->chartData.GetThresholdData()->at(i);
+    ThresholdData singleEnty = this->chartData.getThresholdData()->at(i);
 
-    this->CalculateYThresshold(singleEnty.getLetter()->toStdString(), variablesList,
+    this->calculateYThresshold(singleEnty.getLetter()->toStdString(), variablesList,
                                singleEnty.getName(), singleEnty.getIsShown(),
                                singleEnty.getThreshold(), result);
   }
@@ -102,22 +102,22 @@ QList<QLineSeries*>* MainViewModel::GenerateAllSeries()
   return result;
 }
 
-void MainViewModel::OpenPolyEdit(int row, QWidget* parent)
+void MainViewModel::openPolyEdit(int row, QWidget* parent)
 {
   PolyEditView* polyView = new PolyEditView(parent);
-  polyView->initialize(*this->GetChartData()->GetViewArea());
+  polyView->initialize(*this->getChartData()->getViewArea());
   polyView->exec();
 
   QString formula = polyView->getFormula();
 
-  QList<FunctionData>* entries = this->GetChartData()->GetFunctionData();
+  QList<FunctionData>* entries = this->getChartData()->setFunctionData();
 
   FunctionData data = entries->at(row);
   data.setDefinition(formula);
   entries->replace(row, data);
 }
 
-void MainViewModel::CalculateFunction(FunctionNode* func, QList<map<string, double>>& variablesList,
+void MainViewModel::calculateFunction(FunctionNode* func, QList<map<string, double>>& variablesList,
                                       const string& letter, QString* name, bool isVisible,
                                       QList<QLineSeries*>* out)
 {
@@ -149,7 +149,7 @@ void MainViewModel::CalculateFunction(FunctionNode* func, QList<map<string, doub
   }
 }
 
-void MainViewModel::CalculateDerivation(const string& letter,
+void MainViewModel::calculateDerivation(const string& letter,
                                         QList<map<string, double>>& variablesList,
                                         const string& letterToDerivate, QString* name,
                                         bool isVisible, QList<QLineSeries*>* out)
@@ -194,11 +194,11 @@ void MainViewModel::CalculateDerivation(const string& letter,
   }
 }
 
-void MainViewModel::CalculateYThresshold(const string& letter,
+void MainViewModel::calculateYThresshold(const string& letter,
                                          QList<map<string, double>>& variablesList, QString* name,
                                          bool isVisible, double threshold, QList<QLineSeries*>* out)
 {
-  ViewArea* viewArea = this->GetChartData()->GetViewArea();
+  ViewArea* viewArea = this->getChartData()->getViewArea();
 
   int length = variablesList.count() - 1;
   for (int i = 0; i < length; i++)
@@ -222,7 +222,7 @@ void MainViewModel::CalculateYThresshold(const string& letter,
       continue;
     }
 
-    bool inverted = this->GetChartData()->GetIsChartInverted();
+    bool inverted = this->getChartData()->getIsChartInverted();
     if (isVisible)
     {
       this->addPointToSeries(series, intersectionX,
@@ -237,7 +237,7 @@ void MainViewModel::CalculateYThresshold(const string& letter,
 
 void MainViewModel::addPointToSeries(QXYSeries* series, double x, double y)
 {
-  if (!this->chartData.GetIsChartInverted())
+  if (!this->chartData.getIsChartInverted())
   {
     series->append(x, y);
   }

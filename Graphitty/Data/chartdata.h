@@ -15,38 +15,38 @@ public:
     functionData = QList<FunctionData>();
   }
 
-  inline bool GetIsChartInverted()
+  inline bool getIsChartInverted()
   {
     return isChartInverted;
   }
-  inline void SetIsChartInverted(bool value)
+  inline void setIsChartInverted(bool value)
   {
     isChartInverted = value;
   }
 
-  inline ViewArea* GetViewArea()
+  inline ViewArea* getViewArea()
   {
     return &this->viewArea;
   }
-  inline void SetViewArea(const ViewArea& value)
+  inline void setViewArea(const ViewArea& value)
   {
     this->viewArea = value;
   }
 
-  inline QList<FunctionData>* GetFunctionData()
+  inline QList<FunctionData>* setFunctionData()
   {
     return &this->functionData;
   }
-  inline void SetFunctionData(QList<FunctionData>& value)
+  inline void setFunctionData(QList<FunctionData>& value)
   {
     this->functionData = value;
   }
 
-  inline QList<ThresholdData>* GetThresholdData()
+  inline QList<ThresholdData>* getThresholdData()
   {
     return &this->thresholdData;
   }
-  inline void SetThresholdData(QList<ThresholdData>& value)
+  inline void setThresholdData(QList<ThresholdData>& value)
   {
     this->thresholdData = value;
   }
