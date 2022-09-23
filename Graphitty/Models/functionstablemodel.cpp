@@ -3,7 +3,7 @@
 #include <QBrush>
 #include <QFont>
 
-QStringList header = {"Letter", "Name", "Definition", "Show"};
+QStringList functionsHeader = {"Letter", "Name", "Definition", "Show"};
 
 FunctionsTableModel::FunctionsTableModel(QObject* parent) : QAbstractTableModel(parent)
 {
@@ -38,7 +38,7 @@ QVariant FunctionsTableModel::headerData(int section, Qt::Orientation orientatio
     return QVariant(QString::number(section + 1));
   }
 
-  return QVariant(header[section]);
+  return QVariant(functionsHeader[section]);
 }
 
 bool FunctionsTableModel::setData(const QModelIndex& index, const QVariant& value, int role)
@@ -81,7 +81,7 @@ bool FunctionsTableModel::setData(const QModelIndex& index, const QVariant& valu
   return false;
 }
 
-void FunctionsTableModel::SetFunctionData(QList<FunctionData>* value)
+void FunctionsTableModel::setFunctionData(QList<FunctionData>* value)
 {
   this->entries = value;
 }

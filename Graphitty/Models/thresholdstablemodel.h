@@ -1,12 +1,15 @@
+#ifndef THRESHOLDSTABLEMODEL_H
+#define THRESHOLDSTABLEMODEL_H
+
 #include <QAbstractTableModel>
 
-#include <Data/functiondata.h>
+#include <Data/thresholddata.h>
 
-class FunctionsTableModel : public QAbstractTableModel
+class ThresholdsTableModel : public QAbstractTableModel
 {
   Q_OBJECT
 public:
-  explicit FunctionsTableModel(QObject* parent = nullptr);
+  explicit ThresholdsTableModel(QObject* parent = nullptr);
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const override;
   int columnCount(const QModelIndex& parent = QModelIndex()) const override;
@@ -15,8 +18,10 @@ public:
   QVariant headerData(int section, Qt::Orientation orientation,
                       int role = Qt::DisplayRole) const override;
   bool setData(const QModelIndex& index, const QVariant& value, int role) override;
-  void setFunctionData(QList<FunctionData>* value);
+  void setThresholdData(QList<ThresholdData>* value);
 
 private:
-  QList<FunctionData>* entries;
+  QList<ThresholdData>* entries;
 };
+
+#endif // THRESHOLDSTABLEMODEL_H

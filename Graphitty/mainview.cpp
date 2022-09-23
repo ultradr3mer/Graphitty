@@ -1,8 +1,6 @@
 #include "mainview.h"
 #include "ui_mainview.h"
 
-#include "FunctionParser/functionnode.h"
-
 #include <QFile>
 #include <QFileDialog>
 #include <QJsonDocument>
@@ -17,6 +15,7 @@
 
 #include <Data/functiondata.h>
 #include <Models/functionstablemodel.h>
+#include <Models/thresholdstablemodel.h>
 #include <sheetmanager.h>
 
 MainView::MainView(QWidget* parent)
@@ -27,9 +26,14 @@ MainView::MainView(QWidget* parent)
   this->model = MainViewModel();
   this->mSheetManager = SheetManager();
 
-  auto tableModel = new FunctionsTableModel();
-  tableModel->SetFunctionData(this->model.getChartData()->getFunctionData());
-  this->ui->functions->setModel(tableModel);
+  FunctionsTableModel* functionstableModel = new FunctionsTableModel();
+  functionstableModel->setFunctionData(this->model.getChartData()->getFunctionData());
+  this->ui->functions->setModel(functionstableModel);
+
+  auto thresholdsModel = new ThresholdsTableModel();
+  thresholdsModel->setThresholdData(this->model.getChartData()->getThresholdData());
+  this->ui->yThesholds->setModel(thresholdsModel);
+
   this->readViewSettings();
   this->initializeChart();
 }
