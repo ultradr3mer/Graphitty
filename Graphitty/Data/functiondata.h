@@ -5,12 +5,6 @@
 
 class FunctionData
 {
-private:
-  QString mLetter;
-  QString mName;
-  QString mDefinition;
-  bool mIsShown;
-
 public:
   FunctionData(const QString& letter, const QString& name, const QString& definition, bool isShown)
       : mLetter(letter), mName(name), mDefinition(definition), mIsShown(isShown)
@@ -27,41 +21,47 @@ public:
 
   FunctionData();
 
-  inline QString* GetLetter()
+  inline QString* getLetter()
   {
     return &mLetter;
   }
-  inline void SetLetter(const QString& value)
+  inline void setLetter(const QString& value)
   {
     mLetter = value;
   }
 
-  inline QString* GetName()
+  inline QString* getName()
   {
     return &mName;
   }
-  inline void SetName(const QString& value)
+  inline void setName(const QString& value)
   {
     mName = value;
   }
 
-  inline QString* GetDefinition()
+  inline QString* getDefinition()
   {
     return &mDefinition;
   }
-  inline void SetDefinition(const QString& value)
+  inline void setDefinition(const QString& value)
   {
     mDefinition = value;
   }
 
-  inline bool GetIsShown()
+  inline bool getIsShown()
   {
     return this->mIsShown;
   }
-  inline void SetIsShown(bool value)
+  inline void setIsShown(bool value)
   {
     this->mIsShown = value;
   }
+
+private:
+  QString mLetter;
+  QString mName;
+  QString mDefinition;
+  bool mIsShown;
 };
 
 #endif // FUNCTIONDATA_H

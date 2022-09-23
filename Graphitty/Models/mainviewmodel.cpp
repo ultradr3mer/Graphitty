@@ -59,20 +59,20 @@ QList<QLineSeries*>* MainViewModel::GenerateAllSeries()
   auto functionData = this->chartData.GetFunctionData();
   for (auto& singleEnty : functionData)
   {
-    auto definition = *singleEnty.GetDefinition();
+    auto definition = *singleEnty.getDefinition();
     auto match = derivateRegex.match(definition);
 
     if (match.hasMatch())
     {
       auto letter = match.captured(1).trimmed();
-      this->CalculateDerivation(singleEnty.GetLetter()->toStdString(), variablesList,
-                                letter.toStdString(), singleEnty.GetName(), result);
+      this->CalculateDerivation(singleEnty.getLetter()->toStdString(), variablesList,
+                                letter.toStdString(), singleEnty.getName(), result);
     }
     else
     {
       auto func = new FunctionNode(definition.toStdString());
-      this->CalculateFunction(func, variablesList, singleEnty.GetLetter()->toStdString(),
-                              singleEnty.GetDefinition(), result);
+      this->CalculateFunction(func, variablesList, singleEnty.getLetter()->toStdString(),
+                              singleEnty.getDefinition(), result);
       delete func;
     }
   }
