@@ -214,11 +214,11 @@
        </size>
       </property>
       <property name="title">
-       <string>Y Thresholds</string>
+       <string>Thresholds</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0">
-        <widget class="QTableView" name="yThesholds"/>
+        <widget class="QTableView" name="thesholds"/>
        </item>
       </layout>
      </widget>

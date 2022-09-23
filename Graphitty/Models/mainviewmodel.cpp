@@ -203,13 +203,6 @@ void MainViewModel::calculateYThresshold(const string& letter,
   int length = variablesList.count() - 1;
   for (int i = 0; i < length; i++)
   {
-    QLineSeries* series;
-    if (isVisible)
-    {
-      series = new QLineSeries();
-      series->setName(*name);
-      series->setPen(Qt::DashLine);
-    }
 
     auto lastVars = &variablesList[i];
     QPointF last(lastVars->at(BASE_LETTER), lastVars->at(letter));
@@ -222,18 +215,30 @@ void MainViewModel::calculateYThresshold(const string& letter,
       continue;
     }
 
-    bool inverted = this->getChartData()->getIsChartInverted();
+    QLineSeries* seriesVerical;
+    QLineSeries* seriesHorizontal;
     if (isVisible)
     {
-      this->addPointToSeries(series, intersectionX,
-                             inverted ? viewArea->getFromX() : viewArea->getFromY());
-      this->addPointToSeries(series, intersectionX,
-                             inverted ? viewArea->getToX() : viewArea->getToY());
+      seriesVerical = new QLineSeries();
+      seriesVerical->setName(*name);
+      seriesVerical->setPen(Qt::DashLine);
+      seriesHorizontal = new QLineSeries();
+      seriesHorizontal->setName(QString::number(threshold));
+      seriesHorizontal->setPen(Qt::DashLine);
     }
 
     if (isVisible)
     {
-      out->append(series);
+      seriesVerical->append(intersectionX, viewArea->getFromY());
+      seriesVerical->append(intersectionX, viewArea->getToY());
+      seriesHorizontal->append(viewArea->getFromX(), threshold);
+      seriesHorizontal->append(viewArea->getToX(), threshold);
+    }
+
+    if (isVisible)
+    {
+      out->append(seriesVerical);
+      out->append(seriesHorizontal);
     }
   }
 }
@@ -253,6 +258,17 @@ void MainViewModel::addPointToSeries(QXYSeries* series, double x, double y)
 bool MainViewModel::tryFindIntersectionX(QPointF a, QPointF b, double threshold,
                                          double& intersectionX)
 {
+  if (a.x() != a.x() || a.y() != a.y() || b.x() != b.x() || b.y() != b.y())
+  {
+    return false;
+  }
+
+  if (this->chartData.getIsChartInverted())
+  {
+    a = a.transposed();
+    b = b.transposed();
+  }
+
   if ((a.y() > threshold) == (b.y() > threshold))
   {
     return false;

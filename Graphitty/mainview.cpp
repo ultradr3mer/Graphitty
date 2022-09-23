@@ -32,7 +32,7 @@ MainView::MainView(QWidget* parent)
 
   auto thresholdsModel = new ThresholdsTableModel();
   thresholdsModel->setThresholdData(this->model.getChartData()->getThresholdData());
-  this->ui->yThesholds->setModel(thresholdsModel);
+  this->ui->thesholds->setModel(thresholdsModel);
 
   this->readViewSettings();
   this->initializeChart();
