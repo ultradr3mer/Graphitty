@@ -231,7 +231,10 @@ void MainViewModel::calculateYThresshold(const string& letter,
                              inverted ? viewArea->getToX() : viewArea->getToY());
     }
 
-    out->append(series);
+    if (isVisible)
+    {
+      out->append(series);
+    }
   }
 }
 

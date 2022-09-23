@@ -67,6 +67,41 @@ QVariant ThresholdsTableModel::headerData(int section, Qt::Orientation orientati
 
 bool ThresholdsTableModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
+  switch (role)
+  {
+  case Qt::EditRole:
+    if (index.column() == 0)
+    {
+      auto data = this->entries->at(index.row());
+      data.setName(value.toString());
+      this->entries->replace(index.row(), data);
+      return true;
+    }
+    else if (index.column() == 1)
+    {
+      auto data = this->entries->at(index.row());
+      data.setLetter(value.toString());
+      this->entries->replace(index.row(), data);
+      return true;
+    }
+    else if (index.column() == 2)
+    {
+      auto data = this->entries->at(index.row());
+      data.setThreshold(value.toDouble());
+      this->entries->replace(index.row(), data);
+      return true;
+    }
+
+  case Qt::CheckStateRole:
+    if (index.column() == 3)
+    {
+      auto data = this->entries->at(index.row());
+      bool checked = value == Qt::Checked;
+      data.setIsShown(checked);
+      this->entries->replace(index.row(), data);
+      return true;
+    }
+  }
   return false;
 }
 
