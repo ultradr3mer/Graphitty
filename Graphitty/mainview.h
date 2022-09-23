@@ -8,6 +8,7 @@
 
 #include "FunctionParser/functionnode.h"
 #include "Models/mainviewmodel.h"
+#include "sheetmanager.h"
 
 namespace Ui
 {
@@ -35,9 +36,11 @@ private slots:
 private:
   Ui::MainView* ui;
   void initializeChart();
+  void addRecentProject();
   bool mImported = false;
   FunctionNode mCalculation;
   FunctionNode mOtherCalculation;
+  SheetManager mSheetManager;
   int mFromCalc = 0;
   int mToCalc = 7;
   void setSeries();

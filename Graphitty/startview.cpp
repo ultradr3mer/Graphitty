@@ -21,7 +21,7 @@ QJsonArray StartView::collectRecentProjects()
 {
     QString val;
     QFile file;
-    QString fileName = QDir::currentPath() + "/recent.json";
+    QString fileName = "recent.json";
     QJsonArray lastProjects = {};
 
     file.setFileName(fileName);

@@ -2,6 +2,7 @@
 #define VIEWAREA_H
 
 #include <QPointF>
+#include <QJsonArray>
 
 class ViewArea
 {
@@ -37,6 +38,11 @@ public:
   inline double getHeight()
   {
     return mToY - mFromY;
+  }
+
+  inline QJsonArray getViewpoints()
+  {
+      return {mFromX, mToX,  mFromY, mToY};
   }
 
   bool isInside(QPointF point);

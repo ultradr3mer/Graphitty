@@ -3,32 +3,38 @@
 
 #include <QChart>
 #include <QJsonArray>
+#include <QList>
+#include <Data/functiondata.h>
+#include <viewarea.h>
+#include <Data/chartdata.h>
 
-namespace std
-{
-    class SheetManager;
-}
+
 
 class SheetManager
 {
 
 public:
     SheetManager();
-    SheetManager(const QString& filePath);
     ~SheetManager();
+    void openProject(const QString& filePath);
     void readProject(const QString& filePath);
-    void saveProject();
-    void saveNewProject(const QString& filePath);
-    void saveProjectToFile(const QString& filePath);
-    void saveSheet(const QJsonArray& sheet);
-    QJsonArray loadSheet(int sheetIndex);
-    bool checkExistingProject();
+    void saveProjectToFile(ChartData* chart, const QString& filePath);
+    void saveSheet(ChartData* chart);
+    ChartData loadSheet();
+    bool checkForExistingProject();
+    QJsonArray getSheetTree();
+
+
+    inline QString GetProjectPath()
+    {
+        return mProjectPath;
+    }
 
 private:
-    int sheetIndex = 0;
-    QString projectPath;
-    QJsonArray sheetGlobal;
-    QJsonArray sheetData;
+    QString mProjectPath;
+    QJsonValue mSheetGlobal;
+    QJsonValue mSheetData;
+    int mSheetIndex = 0;
 };
 
 #endif // SHEETMANAGER_H
