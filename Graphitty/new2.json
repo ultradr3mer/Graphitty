@@ -37,13 +37,13 @@
                     "shown": false
                 }
             ],
-            "inverted": true,
+            "inverted": false,
             "name": "sheetNew",
             "view": {
-                "fromX": 0,
+                "fromX": 5,
                 "fromY": 0,
                 "toX": 10,
-                "toY": 50
+                "toY": 60
             }
         },
         {

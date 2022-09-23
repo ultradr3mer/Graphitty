@@ -4,6 +4,7 @@
 #include "FunctionParser/functionnode.h"
 
 #include <QFile>
+#include <QFileDialog>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox>
@@ -16,6 +17,7 @@
 
 #include <Data/functiondata.h>
 #include <Models/functionstablemodel.h>
+#include <sheetmanager.h>
 
 MainView::MainView(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainView), model(MainViewModel())
@@ -23,6 +25,7 @@ MainView::MainView(QWidget* parent)
   ui->setupUi(this);
 
   this->model = MainViewModel();
+  this->mSheetManager = SheetManager();
 
   FunctionsTableModel* tableModel = new FunctionsTableModel;
   tableModel->SetFunctionData(this->model.getChartData()->setFunctionData());
@@ -38,29 +41,12 @@ MainView::~MainView()
 
 void MainView::openProject(const QString& fileName)
 {
-  QString val;
-  QFile file;
-
-  file.setFileName(fileName);
-  file.open(QIODevice::ReadOnly | QIODevice::Text);
-  val = file.readAll();
-  file.close();
-
-  qWarning() << val;
-
-  QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
-  QJsonObject values = d.object();
-  QJsonValue value = values.value(QString("function"));
-  QJsonObject item = value.toObject();
-
-  this->writeViewSettings();
-
-  mCalculation = FunctionNode(item["calculation"].toString().toStdString());
-  mFromCalc = item["fromCalc"].toInt();
-  mToCalc = item["toCalc"].toInt();
-
-  mImported = true;
-
+  this->mSheetManager.openProject(fileName);
+  ChartData loadedData = this->mSheetManager.loadSheet();
+  QJsonArray tree = this->mSheetManager.getSheetTree(); // Debug
+  this->addRecentProject();
+  this->model.SetChartData(loadedData);
+  this->readViewSettings();
   this->initializeChart();
 }
 
@@ -124,6 +110,41 @@ void MainView::setSeries()
   }
 }
 
+void MainView::addRecentProject()
+{
+    QString val;
+    QFile file;
+    //QString fileName = QFileDialog::getOpenFileName(this, tr("Open Recent"), "/home", tr("Json Files (*.json)"));
+    QString fileName = "recent.json";
+    QJsonArray lastProjects = {};
+
+    file.setFileName(fileName);
+
+    if(QFileInfo::exists(fileName)) {
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
+        val = file.readAll();
+        file.close();
+
+        QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
+        QJsonObject values = doc.object();
+
+        QJsonArray projects = values["projects"].toArray();
+        projects.append(this->mSheetManager.GetProjectPath());
+
+        auto recentProjects = QJsonObject(
+            {
+                qMakePair(QString("projects"), projects),
+             });
+
+        doc.setObject(recentProjects);
+
+        file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
+        file.write(doc.toJson());
+        file.close();
+
+    }
+}
+
 void MainView::on_polyEdit_clicked()
 {
   auto selection = this->ui->functions->selectionModel();
@@ -143,14 +164,23 @@ void MainView::on_polyEdit_clicked()
 
 void MainView::on_actionSpeichern_unter_triggered()
 {
+    auto fileName = QFileDialog::getSaveFileName(this, tr("Save Project to"), "/home", tr("Json Files (*.json)"));
+    this->mSheetManager.saveProjectToFile(this->model.GetChartData(), fileName);
+    this->addRecentProject();
 }
 
 void MainView::on_actionSpeichern_triggered()
 {
+    if (this->mSheetManager.checkForExistingProject()) {
+        this->mSheetManager.saveProjectToFile(this->model.GetChartData(), this->mSheetManager.GetProjectPath());
+    } else {
+        this->on_actionSpeichern_unter_triggered();
+    }
 }
 
 void MainView::on_actionProjektmappe_schlie_en_triggered()
 {
+
 }
 
 void MainView::on_update_clicked()
