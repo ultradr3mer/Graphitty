@@ -6,6 +6,9 @@
 #include <QMainWindow>
 #include <QValueAxis>
 
+#include <Models/functionstablemodel.h>
+#include <Models/thresholdstablemodel.h>
+
 #include "FunctionParser/functionnode.h"
 #include "Models/mainviewmodel.h"
 #include "Models/sheetviewmodel.h"
@@ -35,9 +38,9 @@ private slots:
   void on_viewAdd_clicked();
   void on_viewDelete_clicked();
   void on_viewRename_clicked();
-  void on_sheetViews_clicked(const QModelIndex &index);
+  void on_sheetViews_clicked(const QModelIndex& index);
 
-  private:
+private:
   Ui::MainView* ui;
   void initializeChart();
   void addRecentProject();
@@ -57,6 +60,8 @@ private slots:
   SheetViewModel* sheets;
   void readViewSettings();
   void writeViewSettings();
+  FunctionsTableModel* functionstableModel;
+  ThresholdsTableModel* thresholdsModel;
 };
 
 #endif // MAINVIEW_H

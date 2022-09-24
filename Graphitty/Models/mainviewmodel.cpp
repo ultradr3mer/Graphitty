@@ -19,11 +19,42 @@ ChartData initializeDefaultChartData()
   result.setViewArea(va);
 
   FunctionData defaultFunktionen[] = {
-      //      FunctionData("x", "Produktionsfunktion", "6(r+r^2)-r^3", true),
-      //      FunctionData("x'", "Grenzertrag", "derivate(x)", true),
-      //      FunctionData("x''", "Grenzertragszuwachs", "derivate(x')", true),
-      //      FunctionData("e", "Durschnittsertrag", "x/r", true),
-      //      FunctionData("e'", "Ableitung", "derivate(e)", false),
+      FunctionData("x", "Produktionsfunktion", "6(r+r^2)-r^3", true),
+      FunctionData("x'", "Grenzertrag", "derivate(x)", true),
+      FunctionData("x''", "Grenzertragszuwachs", "derivate(x')", true),
+      FunctionData("e", "Durschnittsertrag", "x/r", true),
+      FunctionData("e'", "Ableitung", "derivate(e)", false),
+  };
+
+  for (auto singleEntry : defaultFunktionen)
+  {
+    FunctionData singleCopy(singleEntry);
+    result.getFunctionData()->append(singleCopy);
+  }
+
+  ThresholdData defaultThresholds[] = {ThresholdData("Übergang Phase 1 zu 2", "x''", 0.0, true),
+                                       ThresholdData("Übergang Phase 2 zu 3", "e'", 0.0, true),
+                                       ThresholdData("Übergang Phase 3 zu 4", "x'", 0.0, true)};
+
+  for (auto singleEntry : defaultThresholds)
+  {
+    ThresholdData singleCopy(singleEntry);
+    result.getThresholdData()->append(singleCopy);
+  }
+
+  result.setName("4 Phasen Schema Produktion");
+  return result;
+}
+
+ChartData initializeDefaultChartData2()
+{
+  ChartData result;
+  result.setIsChartInverted(false);
+
+  ViewArea va(0.0, 7.0, 0.0, 60.0);
+  result.setViewArea(va);
+
+  FunctionData defaultFunktionen[] = {
       FunctionData("k", "variable Kosten K", "(0.4390*r^3) + (-4.6492*r^2) + (19.6220*r^1)", true),
       FunctionData("k'", "Grenzkosten k'", "derivate(k)", true),
       FunctionData("k''", "Grenzkostenwachstum", "derivate(k')", false),
@@ -41,16 +72,9 @@ ChartData initializeDefaultChartData()
     result.getFunctionData()->append(singleCopy);
   }
 
-  ThresholdData defaultThresholds[] = {
-      //                                       ThresholdData("Übergang Phase 1 zu 2", "x''", 0.0,
-      //                                       true),
-      //                                       ThresholdData("Übergang Phase 2 zu 3", "e'", 0.0,
-      //                                       true),
-      //                                       ThresholdData("Übergang Phase 3 zu 4", "x'", 0.0,
-      //                                       true),
-      ThresholdData("Übergang Phase 1 zu 2", "k''", 0.0, true),
-      ThresholdData("Übergang Phase 2 zu 3", "v'", 0.0, true),
-      ThresholdData("Übergang Phase 3 zu 4", "s'", 0.0, true)};
+  ThresholdData defaultThresholds[] = {ThresholdData("Übergang Phase 1 zu 2", "k''", 0.0, true),
+                                       ThresholdData("Übergang Phase 2 zu 3", "v'", 0.0, true),
+                                       ThresholdData("Übergang Phase 3 zu 4", "s'", 0.0, true)};
 
   for (auto singleEntry : defaultThresholds)
   {
@@ -58,7 +82,7 @@ ChartData initializeDefaultChartData()
     result.getThresholdData()->append(singleCopy);
   }
 
-  result.setName("New Sheet");
+  result.setName("4 Phasen Schema Kosten");
   return result;
 }
 
@@ -66,15 +90,18 @@ MainViewModel::MainViewModel()
 {
   QList<ChartData> defaultList;
   auto defaultData = initializeDefaultChartData();
-  this->setChartData(defaultData);
-
   defaultList.append(defaultData);
+  auto defaultData2 = initializeDefaultChartData2();
+  defaultList.append(defaultData2);
   this->setChartList(defaultList);
+
+  this->setChartData(defaultData);
 }
 
-void MainViewModel::appendNewDefaultData() {
-    auto defaultData = initializeDefaultChartData();
-    this->addChart(defaultData);
+void MainViewModel::appendNewDefaultData()
+{
+  auto defaultData = initializeDefaultChartData();
+  this->addChart(defaultData);
 }
 
 QList<QLineSeries*>* MainViewModel::generateAllSeries()
