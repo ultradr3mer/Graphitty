@@ -104,7 +104,8 @@ void MainViewModel::appendNewDefaultData()
   this->addChart(defaultData);
 }
 
-QList<QLineSeries*>* MainViewModel::generateAllSeries()
+void MainViewModel::generateAllSeries(QList<QLineSeries*>& seriesInLegend,
+                                      QList<QLineSeries*>& series)
 {
   double delta = this->chartData.getIsChartInverted() ? this->chartData.getViewArea()->getHeight()
                                                       : this->chartData.getViewArea()->getWidth();
@@ -120,7 +121,8 @@ QList<QLineSeries*>* MainViewModel::generateAllSeries()
     variablesList.append(map<string, double>{{BASE_LETTER, r}});
   }
 
-  auto result = new QList<QLineSeries*>();
+  seriesInLegend = QList<QLineSeries*>();
+  series = QList<QLineSeries*>();
   int length = this->chartData.getFunctionData()->count();
   for (int i = 0; i < length; ++i)
   {
@@ -134,13 +136,13 @@ QList<QLineSeries*>* MainViewModel::generateAllSeries()
       QString letter = match.captured(1).trimmed();
       this->calculateDerivation(singleEnty.getLetter()->toStdString(), variablesList,
                                 letter.toStdString(), singleEnty.getName(), singleEnty.getIsShown(),
-                                result);
+                                &seriesInLegend);
     }
     else
     {
       FunctionNode* func = new FunctionNode(definition.toStdString());
       this->calculateFunction(func, variablesList, singleEnty.getLetter()->toStdString(),
-                              singleEnty.getName(), singleEnty.getIsShown(), result);
+                              singleEnty.getName(), singleEnty.getIsShown(), &seriesInLegend);
       delete func;
     }
   }
@@ -152,10 +154,8 @@ QList<QLineSeries*>* MainViewModel::generateAllSeries()
 
     this->calculateYThresshold(singleEnty.getLetter()->toStdString(), variablesList,
                                singleEnty.getName(), singleEnty.getIsShown(),
-                               singleEnty.getThreshold(), result);
+                               singleEnty.getThreshold(), &series);
   }
-
-  return result;
 }
 
 void MainViewModel::openPolyEdit(int row, QWidget* parent)

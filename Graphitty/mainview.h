@@ -43,6 +43,7 @@ private slots:
 private:
   Ui::MainView* ui;
   void initializeChart();
+  void safeInitializeChart();
   void addRecentProject();
   void saveCurrentChartData();
   void switchCurrentChartData(int index);

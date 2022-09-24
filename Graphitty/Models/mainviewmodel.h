@@ -51,7 +51,7 @@ public:
   {
     return this->activeChartIndex;
   }
-  QList<QLineSeries*>* generateAllSeries();
+  void generateAllSeries(QList<QLineSeries *> &seriesInLegend, QList<QLineSeries *> &series);
   void openPolyEdit(int row, QWidget* parent);
   void appendNewDefaultData();
 

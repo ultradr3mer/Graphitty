@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QLegendMarker>
 #include <QMessageBox>
 #include <QPointF>
 #include <QRegExp>
@@ -38,7 +39,7 @@ MainView::MainView(QWidget* parent)
   this->ui->sheetViews->setModel(this->sheets);
 
   this->readViewSettings();
-  this->initializeChart();
+  this->safeInitializeChart();
 }
 
 MainView::~MainView()
@@ -53,7 +54,7 @@ void MainView::openProject(const QString& fileName)
   this->model.setActiveChart(0);
   this->sheets->setSheetViews(this->model);
   this->readViewSettings();
-  this->initializeChart();
+  this->safeInitializeChart();
   /*
 this->mSheetManager.openProject(fileName);
 ChartData loadedData = this->mSheetManager.loadSheet();
@@ -81,10 +82,33 @@ void MainView::initializeChart()
   chart->addAxis(axisY, Qt::AlignLeft);
   this->axisY = axisY;
 
+  chart->legend()->setInteractive(true);
   this->ui->chartView->setChart(chart);
   this->chart = chart;
 
   this->setSeries();
+}
+
+void MainView::safeInitializeChart()
+{
+  try
+  {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    initializeChart();
+    QApplication::restoreOverrideCursor();
+  }
+  catch (FunctionParserException e)
+  {
+    QApplication::restoreOverrideCursor();
+    QMessageBox::information(this, "The function contains an error.", e.getMessage().c_str(),
+                             QMessageBox::Ok);
+  }
+  catch (DerivationException e)
+  {
+    QApplication::restoreOverrideCursor();
+    QMessageBox::information(this, "The derivation contains an error.", e.getMessage(),
+                             QMessageBox::Ok);
+  }
 }
 
 void MainView::readViewSettings()
@@ -115,13 +139,27 @@ void MainView::setSeries()
 
   this->chart->removeAllSeries();
 
-  auto allSeries = this->model.generateAllSeries();
+  QList<QLineSeries*> seriesInLegend;
+  QList<QLineSeries*> series;
+  this->model.generateAllSeries(seriesInLegend, series);
 
-  for (auto singleSeries : *allSeries)
+  int index = 0;
+  for (auto singleSeries : seriesInLegend)
   {
     this->chart->addSeries(singleSeries);
     singleSeries->attachAxis(this->axisX);
     singleSeries->attachAxis(this->axisY);
+
+    chart->legend()->markers()[index++]->setVisible(true);
+  }
+
+  for (auto singleSeries : series)
+  {
+    this->chart->addSeries(singleSeries);
+    singleSeries->attachAxis(this->axisX);
+    singleSeries->attachAxis(this->axisY);
+
+    chart->legend()->markers()[index++]->setVisible(false);
   }
 }
 
@@ -173,8 +211,6 @@ void MainView::saveCurrentChartData()
 
 void MainView::switchCurrentChartData(int index)
 {
-  QApplication::setOverrideCursor(Qt::WaitCursor);
-
   this->model.setActiveChart(index);
   this->readViewSettings();
 
@@ -186,9 +222,7 @@ void MainView::switchCurrentChartData(int index)
   thresholdsModel->setThresholdData(this->model.getChartData()->getThresholdData());
   emit thresholdsModel->layoutChanged();
 
-  this->initializeChart();
-
-  QApplication::restoreOverrideCursor();
+  this->safeInitializeChart();
 }
 
 void MainView::on_polyEdit_clicked()
@@ -237,25 +271,7 @@ void MainView::on_actionProjektmappe_schlie_en_triggered()
 
 void MainView::on_update_clicked()
 {
-  try
-  {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    initializeChart();
-    setSeries();
-    QApplication::restoreOverrideCursor();
-  }
-  catch (FunctionParserException e)
-  {
-    QApplication::restoreOverrideCursor();
-    QMessageBox::information(this, "The function contains an error.", e.getMessage().c_str(),
-                             QMessageBox::Ok);
-  }
-  catch (DerivationException e)
-  {
-    QApplication::restoreOverrideCursor();
-    QMessageBox::information(this, "The derivation contains an error.", e.getMessage(),
-                             QMessageBox::Ok);
-  }
+  this->safeInitializeChart();
 }
 
 void MainView::on_tableWidget_cellActivated(int row, int column)
