@@ -1,9 +1,10 @@
 #include "functionnode.h"
-#include "VariableNotDefinedException.h"
 
 #include <QString>
 #include <algorithm>
 #include <iostream>
+
+#include <Exceptions/variablenotdefinedexception.h>
 using namespace std;
 
 FunctionNode::FunctionNode()

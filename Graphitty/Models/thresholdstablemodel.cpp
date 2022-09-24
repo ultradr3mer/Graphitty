@@ -8,7 +8,7 @@ ThresholdsTableModel::ThresholdsTableModel(QObject* parent) : QAbstractTableMode
 
 int ThresholdsTableModel::rowCount(const QModelIndex& parent) const
 {
-  return this->entries->count();
+  return this->entries->count() + 1;
 }
 
 int ThresholdsTableModel::columnCount(const QModelIndex& parent) const
@@ -18,7 +18,16 @@ int ThresholdsTableModel::columnCount(const QModelIndex& parent) const
 
 QVariant ThresholdsTableModel::data(const QModelIndex& index, int role) const
 {
-  ThresholdData data = this->entries->at(index.row());
+  ThresholdData data;
+  if (index.row() < this->entries->count())
+  {
+    data = this->entries->at(index.row());
+  }
+  else
+  {
+    data = ThresholdData("", "", 0.0, false);
+  }
+
   switch (role)
   {
   case Qt::DisplayRole:
@@ -67,40 +76,71 @@ QVariant ThresholdsTableModel::headerData(int section, Qt::Orientation orientati
 
 bool ThresholdsTableModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
+  ThresholdData data;
+  if (index.row() < this->entries->count())
+  {
+    data = this->entries->at(index.row());
+  }
+  else
+  {
+    data = ThresholdData("", "", 0.0, false);
+  }
+
+  bool isEdit = false;
   switch (role)
   {
   case Qt::EditRole:
     if (index.column() == 0)
     {
-      auto data = this->entries->at(index.row());
       data.setName(value.toString());
-      this->entries->replace(index.row(), data);
-      return true;
+      isEdit = true;
     }
     else if (index.column() == 1)
     {
-      auto data = this->entries->at(index.row());
       data.setLetter(value.toString());
-      this->entries->replace(index.row(), data);
-      return true;
+      isEdit = true;
     }
     else if (index.column() == 2)
     {
-      auto data = this->entries->at(index.row());
       data.setThreshold(value.toDouble());
-      this->entries->replace(index.row(), data);
-      return true;
+      isEdit = true;
     }
 
   case Qt::CheckStateRole:
     if (index.column() == 3)
     {
-      auto data = this->entries->at(index.row());
       bool checked = value == Qt::Checked;
       data.setIsShown(checked);
-      this->entries->replace(index.row(), data);
-      return true;
+      isEdit = true;
     }
+  }
+
+  if (isEdit)
+  {
+    if (index.row() < this->entries->count())
+    {
+      if (!data.isEmpty())
+      {
+        this->entries->replace(index.row(), data);
+      }
+      else
+      {
+        beginRemoveRows(QModelIndex(), index.row(), index.row());
+        this->entries->remove(index.row());
+        endRemoveRows();
+      }
+    }
+    else
+    {
+      if (!data.isEmpty())
+      {
+        beginInsertRows(QModelIndex(), this->entries->size() + 1, this->entries->size() + 1);
+        this->entries->append(data);
+        endInsertRows();
+      }
+    }
+
+    return true;
   }
   return false;
 }

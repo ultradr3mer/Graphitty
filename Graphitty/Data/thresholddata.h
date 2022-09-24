@@ -19,7 +19,9 @@ public:
     mIsShown = old_obj.mIsShown;
   }
 
-  ThresholdData();
+  ThresholdData()
+  {
+  }
 
   inline QString* getLetter()
   {
@@ -55,6 +57,11 @@ public:
   inline void setIsShown(bool value)
   {
     this->mIsShown = value;
+  }
+
+  inline bool isEmpty()
+  {
+    return this->mName.isEmpty() && this->mLetter.isEmpty() && !this->mIsShown;
   }
 
 private:

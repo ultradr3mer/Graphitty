@@ -1,6 +1,8 @@
 #include "mainviewmodel.h"
 #include "qregularexpression.h"
 #include <Data/functiondata.h>
+#include <Exceptions/derivationexception.h>
+#include <QString>
 #include <polyeditview.h>
 
 const string BASE_LETTER = "r";
@@ -154,6 +156,12 @@ void MainViewModel::calculateDerivation(const string& letter,
                                         const string& letterToDerivate, QString* name,
                                         bool isVisible, QList<QLineSeries*>* out)
 {
+  if (variablesList.first().count(letterToDerivate) == 0)
+  {
+    throw DerivationException(QString("Unable to derivate %1. Letter not found.")
+                                  .arg(QString::fromStdString(letterToDerivate)));
+  }
+
   QLineSeries* series;
   if (isVisible)
   {
@@ -166,9 +174,9 @@ void MainViewModel::calculateDerivation(const string& letter,
   int length = variablesList.count() - 1;
   for (int i = 1; i < length; i++)
   {
-    auto lastVars = &variablesList[max(i - 1, 0)];
+    auto lastVars = &variablesList.at(max(i - 1, 0));
     QPointF last(lastVars->at(BASE_LETTER), lastVars->at(letterToDerivate));
-    auto nextVars = &variablesList[min(i + 1, length - 1)];
+    auto nextVars = &variablesList.at(min(i + 1, length - 1));
     QPointF next(nextVars->at(BASE_LETTER), nextVars->at(letterToDerivate));
 
     double value = (next.y() - last.y()) / (next.x() - last.x());
@@ -198,6 +206,12 @@ void MainViewModel::calculateYThresshold(const string& letter,
                                          QList<map<string, double>>& variablesList, QString* name,
                                          bool isVisible, double threshold, QList<QLineSeries*>* out)
 {
+  if (variablesList.first().count(letter) == 0)
+  {
+    throw DerivationException(QString("Unable to find threshold for %1. Letter not found.")
+                                  .arg(QString::fromStdString(letter)));
+  }
+
   ViewArea* viewArea = this->getChartData()->getViewArea();
 
   int length = variablesList.count() - 1;

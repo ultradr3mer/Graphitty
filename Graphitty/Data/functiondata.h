@@ -19,7 +19,9 @@ public:
     this->mIsShown = old_obj.mIsShown;
   }
 
-  FunctionData();
+  FunctionData()
+  {
+  }
 
   inline QString* getLetter()
   {
@@ -55,6 +57,12 @@ public:
   inline void setIsShown(bool value)
   {
     this->mIsShown = value;
+  }
+
+  inline bool isEmpty()
+  {
+    return this->mName.isEmpty() && this->mLetter.isEmpty() && this->mDefinition.isEmpty() &&
+           !this->mIsShown;
   }
 
 private:

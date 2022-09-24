@@ -1,9 +1,10 @@
 #ifndef MATHOPERATION_H
 #define MATHOPERATION_H
 
-#include "mathoperationexception.h"
 #include <QtMath>
 #include <string>
+
+#include <Exceptions/mathoperationexception.h>
 using namespace std;
 
 class MathOperation
