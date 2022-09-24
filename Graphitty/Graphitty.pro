@@ -13,15 +13,11 @@ CONFIG += c++17
 
 SOURCES += \
     FunctionParser/functionnode.cpp \
-    FunctionParser/functionparserexception.cpp \
-    FunctionParser/mathoperation.cpp \
-    FunctionParser/mathoperationexception.cpp \
-    FunctionParser/variablenotdefinedexception.cpp \
     Math/lineqsolver.cpp \
     Math/polynomialfinder.cpp \
-    Models/mainviewmodel.cpp \
-	Models/functionstablemodel.cpp \
+  Models/functionstablemodel.cpp \
     Models/sheetviewmodel.cpp \
+    Models/mainviewmodel.cpp \
   Models/thresholdstablemodel.cpp \
     main.cpp \
     mainview.cpp \
@@ -36,16 +32,19 @@ HEADERS += \
     Data/functiondata.h \
     Data/functionstablemodel.h \
   Data/thresholddata.h \
+  Exceptions/derivationexception.h \
+  Exceptions/functionparserexception.h \
+  Exceptions/mathoperationexception.h \
+  Exceptions/thresholdexception.h \
+  Exceptions/variablenotdefinedexception.h \
     FunctionParser/functionnode.h \
-    FunctionParser/functionparserexception.h \
     FunctionParser/mathoperation.h \
     FunctionParser/mathoperationexception.h \
-    FunctionParser/variablenotdefinedexception.h \
     Math/lineqsolver.h \
     Math/polynomialfinder.h \
-    Models/mainviewmodel.h \
-	Models/functionstablemodel.h \
+  Models/functionstablemodel.h \
     Models/sheetviewmodel.h \
+    Models/mainviewmodel.h \
   Models/thresholdstablemodel.h \
     mainview.h \
     polyeditchartview.h \

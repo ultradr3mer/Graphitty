@@ -1,6 +1,8 @@
 #include "mainviewmodel.h"
 #include "qregularexpression.h"
 #include <Data/functiondata.h>
+#include <Exceptions/derivationexception.h>
+#include <QString>
 #include <polyeditview.h>
 
 const string BASE_LETTER = "r";
@@ -160,11 +162,22 @@ void MainViewModel::calculateFunction(FunctionNode* func, QList<map<string, doub
   }
 }
 
+bool isNan(const QPointF& value)
+{
+  return value.x() != value.x() || value.y() != value.y();
+}
+
 void MainViewModel::calculateDerivation(const string& letter,
                                         QList<map<string, double>>& variablesList,
                                         const string& letterToDerivate, QString* name,
                                         bool isVisible, QList<QLineSeries*>* out)
 {
+  if (variablesList.first().count(letterToDerivate) == 0)
+  {
+    throw DerivationException(QString("Unable to derivate %1. Letter not found.")
+                                  .arg(QString::fromStdString(letterToDerivate)));
+  }
+
   QLineSeries* series;
   if (isVisible)
   {
@@ -177,19 +190,20 @@ void MainViewModel::calculateDerivation(const string& letter,
   int length = variablesList.count() - 1;
   for (int i = 1; i < length; i++)
   {
-    auto lastVars = &variablesList[max(i - 1, 0)];
+    auto lastVars = &variablesList[i - 1];
     QPointF last(lastVars->at(BASE_LETTER), lastVars->at(letterToDerivate));
-    auto nextVars = &variablesList[min(i + 1, length - 1)];
+    auto nextVars = &variablesList[i + 1];
     QPointF next(nextVars->at(BASE_LETTER), nextVars->at(letterToDerivate));
 
-    double value = (next.y() - last.y()) / (next.x() - last.x());
     auto thisVars = &variablesList[i];
-    thisVars->insert_or_assign(letter, value);
 
-    if (value == NAN)
+    if (isNan(last) || isNan(next))
     {
-      continue;
+      this->addPointToSeries(series, thisVars->at(BASE_LETTER), NAN);
     }
+
+    double value = (next.y() - last.y()) / (next.x() - last.x());
+    thisVars->insert_or_assign(letter, value);
 
     if (isVisible)
     {
@@ -209,6 +223,12 @@ void MainViewModel::calculateYThresshold(const string& letter,
                                          QList<map<string, double>>& variablesList, QString* name,
                                          bool isVisible, double threshold, QList<QLineSeries*>* out)
 {
+  if (variablesList.first().count(letter) == 0)
+  {
+    throw DerivationException(QString("Unable to find threshold for %1. Letter not found.")
+                                  .arg(QString::fromStdString(letter)));
+  }
+
   ViewArea* viewArea = this->getChartData()->getViewArea();
 
   int length = variablesList.count() - 1;
@@ -269,7 +289,7 @@ void MainViewModel::addPointToSeries(QXYSeries* series, double x, double y)
 bool MainViewModel::tryFindIntersectionX(QPointF a, QPointF b, double threshold,
                                          double& intersectionX)
 {
-  if (a.x() != a.x() || a.y() != a.y() || b.x() != b.x() || b.y() != b.y())
+  if (isNan(a) || isNan(b))
   {
     return false;
   }

@@ -14,6 +14,7 @@
 #include <qvalueaxis.h>
 
 #include <Data/functiondata.h>
+#include <Exceptions/derivationexception.h>
 #include <Models/functionstablemodel.h>
 #include <Models/thresholdstablemodel.h>
 #include <sheetmanager.h>
@@ -233,6 +234,11 @@ void MainView::on_update_clicked()
   catch (FunctionParserException e)
   {
     QMessageBox::information(this, "The function contains an error.", e.getMessage().c_str(),
+                             QMessageBox::Ok);
+  }
+  catch (DerivationException e)
+  {
+    QMessageBox::information(this, "The derivation contains an error.", e.getMessage(),
                              QMessageBox::Ok);
   }
 }
