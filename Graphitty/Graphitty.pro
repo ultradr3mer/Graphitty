@@ -21,6 +21,7 @@ SOURCES += \
     Math/polynomialfinder.cpp \
     Models/mainviewmodel.cpp \
 	Models/functionstablemodel.cpp \
+    Models/sheetviewmodel.cpp \
   Models/thresholdstablemodel.cpp \
     main.cpp \
     mainview.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
     Math/polynomialfinder.h \
     Models/mainviewmodel.h \
 	Models/functionstablemodel.h \
+    Models/sheetviewmodel.h \
   Models/thresholdstablemodel.h \
     mainview.h \
     polyeditchartview.h \
