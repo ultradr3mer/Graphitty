@@ -1,9 +1,67 @@
 {
-    "global": {
-        "name": "Test1",
-        "path": ""
-    },
     "sheets": [
+        {
+            "function": [
+                {
+                    "definition": "10(r+r^2)-r^3",
+                    "letter": "x",
+                    "name": "Produktionsfunktion",
+                    "shown": true
+                },
+                {
+                    "definition": "derivate(x)",
+                    "letter": "x'",
+                    "name": "Grenzertrag",
+                    "shown": true
+                },
+                {
+                    "definition": "derivate(x')",
+                    "letter": "x''",
+                    "name": "Grenzertragszuwachs",
+                    "shown": true
+                },
+                {
+                    "definition": "x/r",
+                    "letter": "e",
+                    "name": "Durschnittsertrag",
+                    "shown": true
+                },
+                {
+                    "definition": "derivate(e)",
+                    "letter": "e'",
+                    "name": "Ableitung",
+                    "shown": false
+                }
+            ],
+            "inverted": true,
+            "name": "New Sheet",
+            "threshold": [
+                {
+                    "letter": "x''",
+                    "name": "Übergang Phase 1 zu 2",
+                    "shown": true,
+                    "threshold": 0
+                },
+                {
+                    "letter": "e'",
+                    "name": "Übergang Phase 2 zu 3",
+                    "shown": true,
+                    "threshold": 0
+                },
+                {
+                    "letter": "x'",
+                    "name": "Übergang Phase 3 zu 4",
+                    "shown": true,
+                    "threshold": 0
+                }
+            ],
+            "view": {
+                "fromX": 0,
+                "fromY": 0,
+                "toX": 7,
+                "toY": 60
+            }
+        },
         {
             "function": [
                 {
@@ -37,29 +95,93 @@
                     "shown": false
                 }
             ],
-            "inverted": true,
-            "name": "sheetNew",
+            "inverted": false,
+            "name": "Sheet 2",
+            "threshold": [
+                {
+                    "letter": "x''",
+                    "name": "Übergang Phase 1 zu 2",
+                    "shown": true,
+                    "threshold": 0
+                },
+                {
+                    "letter": "e'",
+                    "name": "Übergang Phase 2 zu 3",
+                    "shown": true,
+                    "threshold": 0
+                },
+                {
+                    "letter": "x'",
+                    "name": "Übergang Phase 3 zu 4",
+                    "shown": true,
+                    "threshold": 0
+                }
+            ],
             "view": {
                 "fromX": 0,
                 "fromY": 0,
-                "toX": 10,
-                "toY": 50
+                "toX": 7,
+                "toY": 99
             }
         },
         {
             "function": [
                 {
-                    "definition": "456",
-                    "letter": "456",
-                    "name": "Function2",
+                    "definition": "6(r+r^2)-r^3",
+                    "letter": "x",
+                    "name": "Produktionsfunktion",
                     "shown": true
+                },
+                {
+                    "definition": "derivate(x)",
+                    "letter": "x'",
+                    "name": "Grenzertrag",
+                    "shown": true
+                },
+                {
+                    "definition": "derivate(x')",
+                    "letter": "x''",
+                    "name": "Grenzertragszuwachs",
+                    "shown": true
+                },
+                {
+                    "definition": "x/r",
+                    "letter": "e",
+                    "name": "Durschnittsertrag",
+                    "shown": true
+                },
+                {
+                    "definition": "derivate(e)",
+                    "letter": "e'",
+                    "name": "Ableitung",
+                    "shown": false
                 }
             ],
             "inverted": false,
-            "name": "Sheet2",
+            "name": "Sheet 3",
+            "threshold": [
+                {
+                    "letter": "x''",
+                    "name": "Übergang Phase 1 zu 2",
+                    "shown": true,
+                    "threshold": 0
+                },
+                {
+                    "letter": "e'",
+                    "name": "Übergang Phase 2 zu 3",
+                    "shown": true,
+                    "threshold": 0
+                },
+                {
+                    "letter": "x'",
+                    "name": "Übergang Phase 3 zu 4",
+                    "shown": true,
+                    "threshold": 0
+                }
+            ],
             "view": {
                 "fromX": 0,
-                "fromY": 1,
+                "fromY": 0,
                 "toX": 7,
                 "toY": 60
             }
