@@ -109,8 +109,8 @@ QList<ChartData> SheetManager::convertSheetsToChart(QJsonValue sheets)
         foreach (const QJsonValue& value, thresholds)
         {
             auto threshold = value.toObject();
-            ThresholdData th(threshold["letter"].toString().toStdString().c_str(),
-                            threshold["name"].toString().toStdString().c_str(),
+            ThresholdData th(threshold["name"].toString().toStdString().c_str(),
+                            threshold["letter"].toString().toStdString().c_str(),
                              threshold["threshold"].toDouble(),
                             threshold["shown"].toBool());
 
