@@ -17,11 +17,20 @@ public:
 
   inline bool getIsChartInverted()
   {
-    return isChartInverted;
+      return this->isChartInverted;
   }
   inline void setIsChartInverted(bool value)
   {
-    isChartInverted = value;
+    this->isChartInverted = value;
+  }
+
+  inline QString getName()
+  {
+      return this->name;
+  }
+  inline void setName(QString value)
+  {
+      this->name = value;
   }
 
   inline ViewArea* getViewArea()
@@ -53,6 +62,7 @@ public:
 
 private:
   bool isChartInverted;
+  QString name;
   ViewArea viewArea;
   QList<FunctionData> functionData;
   QList<ThresholdData> thresholdData;

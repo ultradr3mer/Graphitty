@@ -16,14 +16,9 @@ class SheetManager
 public:
     SheetManager();
     ~SheetManager();
-    void openProject(const QString& filePath);
-    void readProject(const QString& filePath);
-    void saveProjectToFile(ChartData* chart, const QString& filePath);
-    void saveSheet(ChartData* chart);
-    ChartData loadSheet();
+    QList<ChartData> readProject(const QString& filePath);
+    void saveProjectToFile(QList<ChartData> charts, const QString& filePath);
     bool checkForExistingProject();
-    QJsonArray getSheetTree();
-
 
     inline QString GetProjectPath()
     {
@@ -32,9 +27,8 @@ public:
 
 private:
     QString mProjectPath;
-    QJsonValue mSheetGlobal;
-    QJsonValue mSheetData;
-    int mSheetIndex = 0;
+    QList<ChartData> convertSheetsToChart(QJsonValue sheets);
+    QJsonValue convertSheetsToJson(QList<ChartData>);
 };
 
 #endif // SHEETMANAGER_H

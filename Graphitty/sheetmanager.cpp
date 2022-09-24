@@ -10,6 +10,7 @@
 
 #include <Data/chartdata.h>
 #include <Data/functiondata.h>
+#include <Data/thresholddata.h>
 #include <viewarea.h>
 
 // creates new sheet manager for projects
@@ -21,16 +22,10 @@ SheetManager::~SheetManager()
 {
 }
 
-// opens given file and saves filepath to manager
-void SheetManager::openProject(const QString& filePath)
+// reads project file into view model
+QList<ChartData> SheetManager::readProject(const QString& filePath)
 {
-  readProject(filePath);
   this->mProjectPath = filePath;
-}
-
-// reads project files into members
-void SheetManager::readProject(const QString& filePath)
-{
   QString val;
   QFile file;
 
@@ -42,24 +37,22 @@ void SheetManager::readProject(const QString& filePath)
   QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
   QJsonObject values = doc.object();
 
-  QJsonValue globals = values.value(QString("global"));
-  this->mSheetGlobal = globals;
-
   QJsonValue sheets = values.value(QString("sheets"));
-  this->mSheetData = sheets;
+  QList<ChartData> charts = this->convertSheetsToChart(sheets);
+
+  return charts;
 }
 
 // final save action to translate to external file
-void SheetManager::saveProjectToFile(ChartData* chart, const QString& filePath)
+void SheetManager::saveProjectToFile(QList<ChartData> charts, const QString& filePath)
 {
-  this->saveSheet(chart);
+  QJsonValue sheets = this->convertSheetsToJson(charts);
 
   QFile file(filePath);
   QJsonDocument* document = new QJsonDocument(QJsonArray());
 
   auto objectData = QJsonObject({
-      qMakePair(QString("global"), this->mSheetGlobal),
-      qMakePair(QString("sheets"), this->mSheetData),
+      qMakePair(QString("sheets"), sheets),
   });
 
   document->setObject(objectData);
@@ -71,71 +64,115 @@ void SheetManager::saveProjectToFile(ChartData* chart, const QString& filePath)
   this->mProjectPath = filePath;
 }
 
-// saves current sheet to manager
-void SheetManager::saveSheet(ChartData* chart)
+QList<ChartData> SheetManager::convertSheetsToChart(QJsonValue sheets)
 {
-  auto viewArea = chart->getViewArea();
-  auto functionData = chart->getFunctionData();
-  auto localFunctionData = *functionData;
-  auto functions = QJsonArray();
+    QList<ChartData> charts;
 
-  for (auto& singleEnty : localFunctionData)
-  {
-    auto function = QJsonObject({qMakePair(QString("letter"), *singleEnty.getLetter()),
-                                 qMakePair(QString("name"), *singleEnty.getName()),
-                                 qMakePair(QString("definition"), *singleEnty.getDefinition()),
-                                 qMakePair(QString("shown"), singleEnty.getIsShown())});
 
-    functions.append(function);
-  }
+    auto sheetList = sheets.toArray();
 
-  auto view = QJsonObject({qMakePair(QString("fromX"), viewArea->getFromX()),
-                           qMakePair(QString("toX"), viewArea->getToX()),
-                           qMakePair(QString("fromY"), viewArea->getFromY()),
-                           qMakePair(QString("toY"), viewArea->getToY())});
+    foreach (const QJsonValue& sheet, sheetList)
+    {
+        ChartData chart;
+        auto view = sheet["view"].toObject();
+        auto functions = sheet["function"].toArray();
+        auto thresholds = sheet["threshold"].toArray();
 
-  auto sheet =
-      QJsonObject({qMakePair(QString("function"), functions), qMakePair(QString("view"), view),
-                   // Sheet name not changeable / defined yet
-                   qMakePair(QString("name"), "sheetNew"),
-                   qMakePair(QString("inverted"), chart->getIsChartInverted())});
+        // sets Inverted
+        chart.setIsChartInverted(sheet["inverted"].toBool());
 
-  QJsonArray sheets = this->mSheetData.toArray();
-  sheets[this->mSheetIndex] = sheet;
-  this->mSheetData = QJsonValue(sheets);
+        // sets Name
+        chart.setName(sheet["name"].toString().toStdString().c_str());
+
+        // sets View
+        ViewArea va(view["fromX"].toDouble(), view["toX"].toDouble(), view["fromY"].toDouble(),
+                    view["toY"].toDouble());
+        chart.setViewArea(va);
+
+
+
+        // sets Functions
+        auto functionData = QList<FunctionData>();
+        foreach (const QJsonValue& value, functions)
+        {
+            auto function = value.toObject();
+            FunctionData fc(function["letter"].toString().toStdString().c_str(),
+                            function["name"].toString().toStdString().c_str(),
+                            function["definition"].toString().toStdString().c_str(),
+                            function["shown"].toBool());
+
+            functionData.append(fc);
+        }
+
+        // sets Thresholds
+        auto thresholdData = QList<ThresholdData>();
+        foreach (const QJsonValue& value, thresholds)
+        {
+            auto threshold = value.toObject();
+            ThresholdData th(threshold["letter"].toString().toStdString().c_str(),
+                            threshold["name"].toString().toStdString().c_str(),
+                             threshold["threshold"].toDouble(),
+                            threshold["shown"].toBool());
+
+            thresholdData.append(th);
+        }
+        /* TODO */
+
+        chart.setFunctionData(functionData);
+        chart.setThresholdData(thresholdData);
+        charts.append(chart);
+    }
+
+    return charts;
 }
 
-// loads sheet from project by index
-ChartData SheetManager::loadSheet()
+QJsonValue SheetManager::convertSheetsToJson(QList<ChartData> charts)
 {
-  ChartData result;
-  auto sheets = this->mSheetData.toArray();
-  auto sheet = sheets[this->mSheetIndex].toObject();
-  auto view = sheet["view"].toObject();
-  auto functions = sheet["function"].toArray();
+    QJsonArray sheets;
 
-  result.setIsChartInverted(sheet["inverted"].toBool());
+    for (auto chart : charts)
+    {
+        auto viewArea = chart.getViewArea();
+        auto functionData = chart.getFunctionData();
+        auto thresholdData = chart.getThresholdData();
+        auto functions = QJsonArray();
+        auto thresholds = QJsonArray();
 
-  ViewArea va(view["fromX"].toDouble(), view["toX"].toDouble(), view["fromY"].toDouble(),
-              view["toY"].toDouble());
-  result.setViewArea(va);
+        for (auto& singleEnty : *functionData)
+        {
+            auto function = QJsonObject({qMakePair(QString("letter"), *singleEnty.getLetter()),
+                                         qMakePair(QString("name"), *singleEnty.getName()),
+                                         qMakePair(QString("definition"), *singleEnty.getDefinition()),
+                                         qMakePair(QString("shown"), singleEnty.getIsShown())});
+            functions.append(function);
+        }
 
-  auto functionData = QList<FunctionData>();
+        for (auto& singleEnty : *thresholdData)
+        {
+            auto threshold = QJsonObject({qMakePair(QString("letter"), *singleEnty.getLetter()),
+                                         qMakePair(QString("name"), *singleEnty.getName()),
+                                         qMakePair(QString("threshold"), singleEnty.getThreshold()),
+                                         qMakePair(QString("shown"), singleEnty.getIsShown())});
+            thresholds.append(threshold);
+        }
 
-  foreach (const QJsonValue& value, functions)
-  {
-    auto function = value.toObject();
-    FunctionData fc(function["letter"].toString().toStdString().c_str(),
-                    function["name"].toString().toStdString().c_str(),
-                    function["definition"].toString().toStdString().c_str(),
-                    function["shown"].toBool());
+        auto view = QJsonObject({qMakePair(QString("fromX"), viewArea->getFromX()),
+                                 qMakePair(QString("toX"), viewArea->getToX()),
+                                 qMakePair(QString("fromY"), viewArea->getFromY()),
+                                 qMakePair(QString("toY"), viewArea->getToY())});
 
-    functionData.append(fc);
-  }
+        auto sheet =
+            QJsonObject({
+                         qMakePair(QString("function"), functions),
+                         qMakePair(QString("threshold"), thresholds),
+                         qMakePair(QString("view"), view),
+                         qMakePair(QString("name"), chart.getName()),
+                         qMakePair(QString("inverted"), chart.getIsChartInverted()),
+            });
+        sheets.append(sheet);
+    }
 
-  result.setFunctionData(functionData);
-
-  return result;
+    return QJsonValue(sheets);
 }
 
 // checks if project path exists (if project already has a file path || was saved before)
@@ -149,24 +186,4 @@ bool SheetManager::checkForExistingProject()
   {
     return true;
   }
-}
-
-QJsonArray SheetManager::getSheetTree()
-{
-  QJsonArray tree;
-  auto sheets = this->mSheetData.toArray();
-  int index = 0;
-
-  foreach (const QJsonValue& value, sheets)
-  {
-    auto sheet = value.toObject();
-    auto branch = QJsonObject({
-        qMakePair(QString("name"), sheet["name"].toString().toStdString().c_str()),
-        qMakePair(QString("index"), index),
-    });
-    tree.append(branch);
-    index++;
-  }
-
-  return tree;
 }

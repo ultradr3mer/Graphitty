@@ -57,13 +57,24 @@ ChartData initializeDefaultChartData()
     ThresholdData singleCopy(singleEntry);
     result.getThresholdData()->append(singleCopy);
   }
+
+  result.setName("New Sheet");
   return result;
 }
 
 MainViewModel::MainViewModel()
 {
+  QList<ChartData> defaultList;
   auto defaultData = initializeDefaultChartData();
   this->setChartData(defaultData);
+
+  defaultList.append(defaultData);
+  this->setChartList(defaultList);
+}
+
+void MainViewModel::appendNewDefaultData() {
+    auto defaultData = initializeDefaultChartData();
+    this->addChart(defaultData);
 }
 
 QList<QLineSeries*>* MainViewModel::generateAllSeries()

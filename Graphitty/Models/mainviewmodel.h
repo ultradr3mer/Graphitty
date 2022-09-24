@@ -22,9 +22,38 @@ public:
   {
     this->chartData = value;
   }
-
+  inline QList<ChartData> getChartList()
+  {
+    return this->chartList;
+  }
+  inline void setChartList(QList<ChartData> list)
+  {
+    this->chartList = list;
+  }
+  inline void addChart(ChartData& value)
+  {
+    this->chartList.append(value);
+  }
+  inline void removeChart(int index)
+  {
+    this->chartList.removeAt(index);
+  }
+  inline void setActiveChart(int index)
+  {
+    this->chartData = this->chartList[index];
+    this->activeChartIndex = index;
+  }
+  inline void saveActiveChart()
+  {
+    this->chartList[this->activeChartIndex] = this->chartData;
+  }
+  inline int getActiveIndex()
+  {
+    return this->activeChartIndex;
+  }
   QList<QLineSeries*>* generateAllSeries();
   void openPolyEdit(int row, QWidget* parent);
+  void appendNewDefaultData();
 
 private:
   void calculateFunction(FunctionNode* func, QList<map<string, double>>& variablesList,
@@ -40,6 +69,8 @@ private:
   bool tryFindIntersectionX(QPointF a, QPointF b, double threshold, double& intersectionX);
 
   ChartData chartData;
+  int activeChartIndex = 0;
+  QList<ChartData> chartList;
 };
 
 #endif // MAINVIEWMODEL_H

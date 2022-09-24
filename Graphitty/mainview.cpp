@@ -25,6 +25,8 @@ MainView::MainView(QWidget* parent)
   ui->setupUi(this);
 
   this->model = MainViewModel();
+  this->sheets = new SheetViewModel();
+  this->sheets->setSheetViews(this->model);
   this->mSheetManager = SheetManager();
 
   FunctionsTableModel* functionstableModel = new FunctionsTableModel();
@@ -34,6 +36,8 @@ MainView::MainView(QWidget* parent)
   auto thresholdsModel = new ThresholdsTableModel();
   thresholdsModel->setThresholdData(this->model.getChartData()->getThresholdData());
   this->ui->thesholds->setModel(thresholdsModel);
+
+  this->ui->sheetViews->setModel(this->sheets);
 
   this->readViewSettings();
   this->initializeChart();
@@ -46,6 +50,13 @@ MainView::~MainView()
 
 void MainView::openProject(const QString& fileName)
 {
+  QList<ChartData> loadedData = this->mSheetManager.readProject(fileName);
+  this->model.setChartList(loadedData);
+  this->model.setActiveChart(0);
+  this->sheets->setSheetViews(this->model);
+  this->readViewSettings();
+  this->initializeChart();
+    /*
   this->mSheetManager.openProject(fileName);
   ChartData loadedData = this->mSheetManager.loadSheet();
   QJsonArray tree = this->mSheetManager.getSheetTree(); // Debug
@@ -53,6 +64,7 @@ void MainView::openProject(const QString& fileName)
   this->model.setChartData(loadedData);
   this->readViewSettings();
   this->initializeChart();
+*/
 }
 
 void MainView::initializeChart()
@@ -150,6 +162,24 @@ void MainView::addRecentProject()
   }
 }
 
+// saves name and changed data of currently active chart
+void MainView::saveCurrentChartData()
+{
+    QModelIndex row = this->sheets->index(this->model.getActiveIndex());
+    QString sheetName = row.data(Qt::DisplayRole).toString();
+    this->model.getChartData()->setName(sheetName);
+
+    // saves current active chart
+    this->model.saveActiveChart();
+}
+
+void MainView::switchCurrentChartData(int index)
+{
+    this->model.setActiveChart(index);
+    this->readViewSettings();
+    this->initializeChart();
+}
+
 void MainView::on_polyEdit_clicked()
 {
   auto selection = this->ui->functions->selectionModel();
@@ -169,17 +199,19 @@ void MainView::on_polyEdit_clicked()
 
 void MainView::on_actionSpeichern_unter_triggered()
 {
+  this->saveCurrentChartData();
   auto fileName =
       QFileDialog::getSaveFileName(this, tr("Save Project to"), "/home", tr("Json Files (*.json)"));
-  this->mSheetManager.saveProjectToFile(this->model.getChartData(), fileName);
+  this->mSheetManager.saveProjectToFile(this->model.getChartList(), fileName);
   this->addRecentProject();
 }
 
 void MainView::on_actionSpeichern_triggered()
 {
+  this->saveCurrentChartData();
   if (this->mSheetManager.checkForExistingProject())
   {
-    this->mSheetManager.saveProjectToFile(this->model.getChartData(),
+    this->mSheetManager.saveProjectToFile(this->model.getChartList(),
                                           this->mSheetManager.GetProjectPath());
   }
   else
@@ -218,3 +250,45 @@ void MainView::on_update_clicked()
 void MainView::on_tableWidget_cellActivated(int row, int column)
 {
 }
+
+void MainView::on_viewAdd_clicked()
+{
+    int row = this->sheets->rowCount();
+    this->sheets->insertRows(row,1);
+    this->model.appendNewDefaultData();
+    this->saveCurrentChartData();
+    this->switchCurrentChartData(row);
+
+    QModelIndex index = this->sheets->index(row);
+    this->ui->sheetViews->setCurrentIndex(index);
+    this->ui->sheetViews->edit(index);
+}
+
+void MainView::on_viewRename_clicked()
+{
+    int row = this->ui->sheetViews->currentIndex().row();
+    QModelIndex index = this->sheets->index(row);
+    this->ui->sheetViews->edit(index);
+}
+
+
+void MainView::on_viewDelete_clicked()
+{
+    int rows = this->sheets->rowCount();
+
+    if (rows > 1) {
+        int row = this->ui->sheetViews->currentIndex().row();
+        this->sheets->removeRows(row,1);
+        this->model.removeChart(row);
+        this->switchCurrentChartData(0);
+    }
+}
+
+// onclick action per view entry by index
+void MainView::on_sheetViews_clicked(const QModelIndex &index)
+{
+    this->saveCurrentChartData();
+    int sheetIndex = index.row();
+    this->switchCurrentChartData(sheetIndex);
+}
+

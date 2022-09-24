@@ -16,6 +16,7 @@ SOURCES += \
     Math/lineqsolver.cpp \
     Math/polynomialfinder.cpp \
   Models/functionstablemodel.cpp \
+    Models/sheetviewmodel.cpp \
     Models/mainviewmodel.cpp \
   Models/thresholdstablemodel.cpp \
     main.cpp \
@@ -42,6 +43,7 @@ HEADERS += \
     Math/lineqsolver.h \
     Math/polynomialfinder.h \
   Models/functionstablemodel.h \
+    Models/sheetviewmodel.h \
     Models/mainviewmodel.h \
   Models/thresholdstablemodel.h \
     mainview.h \
