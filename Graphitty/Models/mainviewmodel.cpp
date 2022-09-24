@@ -171,6 +171,8 @@ void MainViewModel::openPolyEdit(int row, QWidget* parent)
   FunctionData data = entries->at(row);
   data.setDefinition(formula);
   entries->replace(row, data);
+
+  delete polyView;
 }
 
 void MainViewModel::calculateFunction(FunctionNode* func, QList<map<string, double>>& variablesList,

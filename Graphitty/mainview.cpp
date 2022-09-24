@@ -23,6 +23,8 @@ MainView::MainView(QWidget* parent)
 {
   ui->setupUi(this);
 
+  this->chart = nullptr;
+
   this->model = MainViewModel();
   this->sheets = new SheetViewModel();
   this->sheets->setSheetViews(this->model);
@@ -68,23 +70,23 @@ this->initializeChart();
 
 void MainView::initializeChart()
 {
-  QChart* chart = new QChart();
+  if (this->chart == nullptr)
+  {
+    this->chart = new QChart();
+    this->axisX = new QValueAxis();
+    this->axisY = new QValueAxis();
+  }
 
   auto viewArea = this->model.getChartData()->getViewArea();
 
-  QValueAxis* axisX = new QValueAxis();
-  axisX->setRange(viewArea->getFromX(), viewArea->getToX());
-  chart->addAxis(axisX, Qt::AlignBottom);
-  this->axisX = axisX;
+  this->axisX->setRange(viewArea->getFromX(), viewArea->getToX());
+  chart->addAxis(this->axisX, Qt::AlignBottom);
 
-  QValueAxis* axisY = new QValueAxis();
-  axisY->setRange(viewArea->getFromY(), viewArea->getToY());
-  chart->addAxis(axisY, Qt::AlignLeft);
-  this->axisY = axisY;
+  this->axisY->setRange(viewArea->getFromY(), viewArea->getToY());
+  chart->addAxis(this->axisY, Qt::AlignLeft);
 
   chart->legend()->setInteractive(true);
   this->ui->chartView->setChart(chart);
-  this->chart = chart;
 
   this->setSeries();
 }
@@ -136,6 +138,12 @@ void MainView::setSeries()
   auto viewArea = this->model.getChartData()->getViewArea();
   this->axisX->setRange(viewArea->getFromX(), viewArea->getToX());
   this->axisY->setRange(viewArea->getFromY(), viewArea->getToY());
+
+  QList<QAbstractSeries*> list = this->ui->chartView->chart()->series();
+  for (QAbstractSeries* singleSeries : list)
+  {
+    delete singleSeries;
+  }
 
   this->chart->removeAllSeries();
 
