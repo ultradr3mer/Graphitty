@@ -19,11 +19,20 @@ ChartData initializeDefaultChartData()
   result.setViewArea(va);
 
   FunctionData defaultFunktionen[] = {
-      FunctionData("x", "Produktionsfunktion", "6(r+r^2)-r^3", true),
-      FunctionData("x'", "Grenzertrag", "derivate(x)", true),
-      FunctionData("x''", "Grenzertragszuwachs", "derivate(x')", true),
-      FunctionData("e", "Durschnittsertrag", "x/r", true),
-      FunctionData("e'", "Ableitung", "derivate(e)", false),
+      //      FunctionData("x", "Produktionsfunktion", "6(r+r^2)-r^3", true),
+      //      FunctionData("x'", "Grenzertrag", "derivate(x)", true),
+      //      FunctionData("x''", "Grenzertragszuwachs", "derivate(x')", true),
+      //      FunctionData("e", "Durschnittsertrag", "x/r", true),
+      //      FunctionData("e'", "Ableitung", "derivate(e)", false),
+      FunctionData("k", "variable Kosten K", "(0.4390*r^3) + (-4.6492*r^2) + (19.6220*r^1)", true),
+      FunctionData("k'", "Grenzkosten k'", "derivate(k)", true),
+      FunctionData("k''", "Grenzkostenwachstum", "derivate(k')", false),
+      FunctionData("v", "variable Stückkosten", "k/r", true),
+      FunctionData("v'", "v. S. Wachstum", "derivate(v)", false),
+      FunctionData("f", "fixkosten", "20", false),
+      FunctionData("kf", "Gesamtkosten", "k+f", true),
+      FunctionData("s", "Stückkosten", "kf/r", true),
+      FunctionData("s'", "S. wachstum", "derivate(s)", false),
   };
 
   for (auto singleEntry : defaultFunktionen)
@@ -32,9 +41,16 @@ ChartData initializeDefaultChartData()
     result.getFunctionData()->append(singleCopy);
   }
 
-  ThresholdData defaultThresholds[] = {ThresholdData("Übergang Phase 1 zu 2", "x''", 0.0, true),
-                                       ThresholdData("Übergang Phase 2 zu 3", "e'", 0.0, true),
-                                       ThresholdData("Übergang Phase 3 zu 4", "x'", 0.0, true)};
+  ThresholdData defaultThresholds[] = {
+      //                                       ThresholdData("Übergang Phase 1 zu 2", "x''", 0.0,
+      //                                       true),
+      //                                       ThresholdData("Übergang Phase 2 zu 3", "e'", 0.0,
+      //                                       true),
+      //                                       ThresholdData("Übergang Phase 3 zu 4", "x'", 0.0,
+      //                                       true),
+      ThresholdData("Übergang Phase 1 zu 2", "k''", 0.0, true),
+      ThresholdData("Übergang Phase 2 zu 3", "v'", 0.0, true),
+      ThresholdData("Übergang Phase 3 zu 4", "s'", 0.0, true)};
 
   for (auto singleEntry : defaultThresholds)
   {
@@ -188,7 +204,8 @@ void MainViewModel::calculateDerivation(const string& letter,
 
     if (isNan(last) || isNan(next))
     {
-      this->addPointToSeries(series, thisVars->at(BASE_LETTER), NAN);
+      thisVars->insert_or_assign(letter, NAN);
+      continue;
     }
 
     double value = (next.y() - last.y()) / (next.x() - last.x());

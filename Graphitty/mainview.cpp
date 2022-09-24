@@ -196,16 +196,20 @@ void MainView::on_update_clicked()
 {
   try
   {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     initializeChart();
     setSeries();
+    QApplication::restoreOverrideCursor();
   }
   catch (FunctionParserException e)
   {
+    QApplication::restoreOverrideCursor();
     QMessageBox::information(this, "The function contains an error.", e.getMessage().c_str(),
                              QMessageBox::Ok);
   }
   catch (DerivationException e)
   {
+    QApplication::restoreOverrideCursor();
     QMessageBox::information(this, "The derivation contains an error.", e.getMessage(),
                              QMessageBox::Ok);
   }
