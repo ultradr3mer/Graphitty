@@ -49,7 +49,7 @@ QString generateFormula(std::vector<double>* coefficients)
     if (power > 0)
     {
       result.append(QString("(%1*%2^%3)")
-                        .arg(QString::number(coefficients->at(i)),
+                        .arg(QString::number(coefficients->at(i), 'f', 4),
                              QString::fromStdString(BASE_LETTER), QString::number(degree - 1 - i)));
     }
     else
