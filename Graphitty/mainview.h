@@ -8,6 +8,7 @@
 
 #include "FunctionParser/functionnode.h"
 #include "Models/mainviewmodel.h"
+#include "Models/sheetviewmodel.h"
 #include "sheetmanager.h"
 
 namespace Ui
@@ -30,13 +31,18 @@ private slots:
   void on_actionSpeichern_triggered();
   void on_actionProjektmappe_schlie_en_triggered();
   void on_update_clicked();
-
   void on_tableWidget_cellActivated(int row, int column);
+  void on_viewAdd_clicked();
+  void on_viewDelete_clicked();
+  void on_viewRename_clicked();
+  void on_sheetViews_clicked(const QModelIndex &index);
 
-private:
+  private:
   Ui::MainView* ui;
   void initializeChart();
   void addRecentProject();
+  void saveCurrentChartData();
+  void switchCurrentChartData(int index);
   bool mImported = false;
   FunctionNode mCalculation;
   FunctionNode mOtherCalculation;
@@ -48,6 +54,7 @@ private:
   QValueAxis* axisX;
   QValueAxis* axisY;
   MainViewModel model;
+  SheetViewModel* sheets;
   void readViewSettings();
   void writeViewSettings();
 };
