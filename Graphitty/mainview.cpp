@@ -275,7 +275,9 @@ void MainView::on_polyEdit_clicked()
     return;
   }
 
+  emit functionstableModel->layoutAboutToBeChanged();
   this->model.openPolyEdit(selection->currentIndex().row(), this);
+  emit functionstableModel->layoutChanged();
 }
 
 // saves current project to new selected file
