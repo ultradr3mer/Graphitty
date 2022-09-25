@@ -18,6 +18,7 @@ IOParser::IOParser()
 {
 }
 
+// destructor
 IOParser::~IOParser()
 {
 }
@@ -43,7 +44,7 @@ QList<ChartData> IOParser::readProject(const QString& filePath)
     return charts;
 }
 
-    // final save action to translate to external file
+    // save action to translate to external file
     void IOParser::saveProjectToFile(QList<ChartData> charts, const QString& filePath)
 {
     QJsonValue sheets = this->convertSheetsToJson(charts);
@@ -65,6 +66,7 @@ QList<ChartData> IOParser::readProject(const QString& filePath)
     delete(document);
 }
 
+// converts external sheet file data into ChartData
 QList<ChartData> IOParser::convertSheetsToChart(QJsonValue sheets)
 {
     QList<ChartData> charts;
@@ -117,7 +119,6 @@ QList<ChartData> IOParser::convertSheetsToChart(QJsonValue sheets)
 
             thresholdData.append(th);
         }
-        /* TODO */
 
         chart.setFunctionData(functionData);
         chart.setThresholdData(thresholdData);
@@ -127,6 +128,8 @@ QList<ChartData> IOParser::convertSheetsToChart(QJsonValue sheets)
     return charts;
 }
 
+
+// converts ChartData sheets into exportable format
 QJsonValue IOParser::convertSheetsToJson(QList<ChartData> charts)
 {
     QJsonArray sheets;
@@ -139,6 +142,7 @@ QJsonValue IOParser::convertSheetsToJson(QList<ChartData> charts)
         auto functions = QJsonArray();
         auto thresholds = QJsonArray();
 
+        // manages Functions
         for (auto& singleEnty : *functionData)
         {
             auto function = QJsonObject({qMakePair(QString("letter"), *singleEnty.getLetter()),
@@ -148,6 +152,7 @@ QJsonValue IOParser::convertSheetsToJson(QList<ChartData> charts)
             functions.append(function);
         }
 
+        // manages Thresholds
         for (auto& singleEnty : *thresholdData)
         {
             auto threshold = QJsonObject({qMakePair(QString("letter"), *singleEnty.getLetter()),
@@ -157,18 +162,20 @@ QJsonValue IOParser::convertSheetsToJson(QList<ChartData> charts)
             thresholds.append(threshold);
         }
 
-            auto view = QJsonObject({qMakePair(QString("fromX"), viewArea->getFromX()),
-                                     qMakePair(QString("toX"), viewArea->getToX()),
-                                     qMakePair(QString("fromY"), viewArea->getFromY()),
-                                     qMakePair(QString("toY"), viewArea->getToY())});
+        // manages View
+        auto view = QJsonObject({qMakePair(QString("fromX"), viewArea->getFromX()),
+                                 qMakePair(QString("toX"), viewArea->getToX()),
+                                 qMakePair(QString("fromY"), viewArea->getFromY()),
+                                 qMakePair(QString("toY"), viewArea->getToY())});
 
-            auto sheet =
-            QJsonObject({
-                         qMakePair(QString("function"), functions),
-                         qMakePair(QString("threshold"), thresholds),
-                         qMakePair(QString("view"), view),
-                         qMakePair(QString("name"), chart.getName()),
-                         qMakePair(QString("inverted"), chart.getIsChartInverted()),
+        // creates export chart object
+        auto sheet =
+        QJsonObject({
+                     qMakePair(QString("function"), functions),
+                     qMakePair(QString("threshold"), thresholds),
+                     qMakePair(QString("view"), view),
+                     qMakePair(QString("name"), chart.getName()),
+                     qMakePair(QString("inverted"), chart.getIsChartInverted()),
                          });
         sheets.append(sheet);
     }

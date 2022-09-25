@@ -357,49 +357,43 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menutest">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>Datei</string>
+     <string>Project</string>
     </property>
+    <addaction name="actionNeu"/>
+    <addaction name="actionOpen"/>
     <addaction name="actionSpeichern"/>
     <addaction name="actionSpeichern_unter"/>
     <addaction name="separator"/>
     <addaction name="actionProjektmappe_schlie_en"/>
    </widget>
-   <widget class="QMenu" name="menuSicht">
-    <property name="title">
-     <string>Neu</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuSicht_2">
-    <property name="title">
-     <string>Sicht</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuHilfe">
-    <property name="title">
-     <string>Hilfe</string>
-    </property>
-   </widget>
-   <addaction name="menutest"/>
-   <addaction name="menuSicht"/>
-   <addaction name="menuSicht_2"/>
-   <addaction name="menuHilfe"/>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSpeichern">
    <property name="text">
-    <string>Speichern</string>
+    <string>Save</string>
    </property>
   </action>
   <action name="actionSpeichern_unter">
    <property name="text">
-    <string>Speichern unter</string>
+    <string>Save as ..</string>
    </property>
   </action>
   <action name="actionProjektmappe_schlie_en">
    <property name="text">
-    <string>Projektmappe schließen</string>
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="actionNeu">
+   <property name="text">
+    <string>New Project</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open Project</string>
    </property>
   </action>
  </widget>

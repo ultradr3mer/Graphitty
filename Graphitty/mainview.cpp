@@ -39,6 +39,7 @@ MainView::MainView(QWidget* parent)
   this->ui->thesholds->setModel(thresholdsModel);
 
   this->ui->sheetViews->setModel(this->sheets);
+  this->ui->sheetViews->setCurrentIndex(this->sheets->index(0));
 
   this->readViewSettings();
   this->safeInitializeChart();
@@ -55,6 +56,7 @@ void MainView::openProject(const QString& fileName)
   this->model.setChartList(loadedData);
   this->model.setActiveChart(0);
   this->sheets->setSheetViews(this->model);
+  this->ui->sheetViews->setCurrentIndex(this->sheets->index(0));
   this->addRecentProject();
   this->readViewSettings();
   this->safeInitializeChart();
@@ -185,12 +187,12 @@ void MainView::addRecentProject()
 
     foreach (const QJsonValue& project, projects)
     {
-        if (project.toString() != this->mIOParser.GetProjectPath()) {
+        if (project.toString() != this->mIOParser.getProjectPath()) {
             newProjectList.append(project.toString());
         }
     }
 
-    newProjectList.append(this->mIOParser.GetProjectPath());
+    newProjectList.append(this->mIOParser.getProjectPath());
 
     auto recentProjects = QJsonObject({
         qMakePair(QString("projects"), newProjectList),
@@ -215,6 +217,7 @@ void MainView::saveCurrentChartData()
   this->model.saveActiveChart();
 }
 
+// switches active chart view to selected one
 void MainView::switchCurrentChartData(int index)
 {
   this->model.setActiveChart(index);
@@ -248,6 +251,7 @@ void MainView::on_polyEdit_clicked()
   this->model.openPolyEdit(selection->currentIndex().row(), this);
 }
 
+// saves current project to new selected file
 void MainView::on_actionSpeichern_unter_triggered()
 {
   this->saveCurrentChartData();
@@ -257,13 +261,14 @@ void MainView::on_actionSpeichern_unter_triggered()
   this->addRecentProject();
 }
 
+// saves current project
 void MainView::on_actionSpeichern_triggered()
 {
   this->saveCurrentChartData();
   if (this->mIOParser.checkForExistingProject())
   {
     this->mIOParser.saveProjectToFile(this->model.getChartList(),
-                                          this->mIOParser.GetProjectPath());
+                                          this->mIOParser.getProjectPath());
   }
   else
   {
@@ -273,8 +278,10 @@ void MainView::on_actionSpeichern_triggered()
 
 void MainView::on_actionProjektmappe_schlie_en_triggered()
 {
+    exit(0);
 }
 
+// updates view output
 void MainView::on_update_clicked()
 {
   this->safeInitializeChart();
@@ -284,6 +291,7 @@ void MainView::on_tableWidget_cellActivated(int row, int column)
 {
 }
 
+// adds new view to project
 void MainView::on_viewAdd_clicked()
 {
   int row = this->sheets->rowCount();
@@ -297,6 +305,7 @@ void MainView::on_viewAdd_clicked()
   this->ui->sheetViews->edit(index);
 }
 
+// enables renaming for selected view
 void MainView::on_viewRename_clicked()
 {
   int row = this->ui->sheetViews->currentIndex().row();
@@ -304,6 +313,7 @@ void MainView::on_viewRename_clicked()
   this->ui->sheetViews->edit(index);
 }
 
+// deletes seletected view
 void MainView::on_viewDelete_clicked()
 {
   int rows = this->sheets->rowCount();
@@ -314,6 +324,14 @@ void MainView::on_viewDelete_clicked()
     this->sheets->removeRows(row, 1);
     this->model.removeChart(row);
     this->switchCurrentChartData(0);
+  } else {
+      QMessageBox msgBox;
+      msgBox.setText("Last view cannot be deleted.");
+      msgBox.setInformativeText("Either create a new one first or edit the last one to your needs.");
+      msgBox.setStandardButtons(QMessageBox::Ok);
+      msgBox.setDefaultButton(QMessageBox::Ok);
+      msgBox.exec();
+      return;
   }
 }
 
@@ -324,3 +342,20 @@ void MainView::on_sheetViews_clicked(const QModelIndex& index)
   int sheetIndex = index.row();
   this->switchCurrentChartData(sheetIndex);
 }
+
+void MainView::on_actionNeu_triggered()
+{
+    this->mIOParser.setProjectPath(NULL);
+    this->model.initializeDefaultData();
+    this->sheets->setSheetViews(this->model);
+    this->ui->sheetViews->setCurrentIndex(this->sheets->index(0));
+    this->switchCurrentChartData(0);
+}
+
+
+void MainView::on_actionOpen_triggered()
+{
+    QString openFile = QFileDialog::getOpenFileName(this, tr("Open Project"), "/home", tr("Json Files (*.json)"));
+    this->openProject(openFile);
+}
+

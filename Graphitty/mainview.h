@@ -40,7 +40,11 @@ private slots:
   void on_viewRename_clicked();
   void on_sheetViews_clicked(const QModelIndex& index);
 
-private:
+  void on_actionNeu_triggered();
+
+  void on_actionOpen_triggered();
+
+  private:
   Ui::MainView* ui;
   void initializeChart();
   void safeInitializeChart();

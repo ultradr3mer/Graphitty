@@ -20,9 +20,14 @@ public:
     void saveProjectToFile(QList<ChartData> charts, const QString& filePath);
     bool checkForExistingProject();
 
-    inline QString GetProjectPath()
+    inline QString getProjectPath()
     {
         return mProjectPath;
+    }
+
+    inline void setProjectPath(QString path)
+    {
+        this->mProjectPath = path;
     }
 
 private:

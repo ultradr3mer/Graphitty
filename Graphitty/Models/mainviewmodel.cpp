@@ -88,14 +88,18 @@ ChartData initializeDefaultChartData2()
 
 MainViewModel::MainViewModel()
 {
-  QList<ChartData> defaultList;
-  auto defaultData = initializeDefaultChartData();
-  defaultList.append(defaultData);
-  auto defaultData2 = initializeDefaultChartData2();
-  defaultList.append(defaultData2);
-  this->setChartList(defaultList);
+    this->initializeDefaultData();
+}
 
-  this->setChartData(defaultData);
+void MainViewModel::initializeDefaultData()
+{
+    QList<ChartData> defaultList;
+    auto defaultData = initializeDefaultChartData();
+    defaultList.append(defaultData);
+    auto defaultData2 = initializeDefaultChartData2();
+    defaultList.append(defaultData2);
+    this->setChartList(defaultList);
+    this->setChartData(defaultData);
 }
 
 void MainViewModel::appendNewDefaultData()

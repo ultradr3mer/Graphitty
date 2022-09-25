@@ -53,6 +53,7 @@ public:
   }
   void generateAllSeries(QList<QLineSeries *> &seriesInLegend, QList<QLineSeries *> &series);
   void openPolyEdit(int row, QWidget* parent);
+  void initializeDefaultData();
   void appendNewDefaultData();
 
 private:
