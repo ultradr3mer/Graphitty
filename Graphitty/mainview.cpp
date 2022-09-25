@@ -55,17 +55,9 @@ void MainView::openProject(const QString& fileName)
   this->model.setChartList(loadedData);
   this->model.setActiveChart(0);
   this->sheets->setSheetViews(this->model);
+  this->addRecentProject();
   this->readViewSettings();
   this->safeInitializeChart();
-  /*
-this->mSheetManager.openProject(fileName);
-ChartData loadedData = this->mSheetManager.loadSheet();
-QJsonArray tree = this->mSheetManager.getSheetTree(); // Debug
-this->addRecentProject();
-this->model.setChartData(loadedData);
-this->readViewSettings();
-this->initializeChart();
-*/
 }
 
 void MainView::initializeChart()
@@ -175,10 +167,8 @@ void MainView::addRecentProject()
 {
   QString val;
   QFile file;
-  // QString fileName = QFileDialog::getOpenFileName(this, tr("Open Recent"), "/home", tr("Json
-  // Files (*.json)"));
   QString fileName = "recent.json";
-  QJsonArray lastProjects = {};
+  QJsonArray newProjectList;
 
   file.setFileName(fileName);
 
@@ -192,10 +182,18 @@ void MainView::addRecentProject()
     QJsonObject values = doc.object();
 
     QJsonArray projects = values["projects"].toArray();
-    projects.append(this->mSheetManager.GetProjectPath());
+
+    foreach (const QJsonValue& project, projects)
+    {
+        if (project.toString() != this->mSheetManager.GetProjectPath()) {
+            newProjectList.append(project.toString());
+        }
+    }
+
+    newProjectList.append(this->mSheetManager.GetProjectPath());
 
     auto recentProjects = QJsonObject({
-        qMakePair(QString("projects"), projects),
+        qMakePair(QString("projects"), newProjectList),
     });
 
     doc.setObject(recentProjects);

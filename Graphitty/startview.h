@@ -1,10 +1,9 @@
 #ifndef STARTVIEW_H
 #define STARTVIEW_H
 
+#include <Models/recentviewmodel.h>
 #include <QDialog>
 #include <QMainWindow>
-
-#include <QJsonArray>
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -20,7 +19,7 @@ class StartView : public QDialog
 public:
   StartView(QWidget* parent = nullptr);
   ~StartView();
-  QJsonArray collectRecentProjects();
+  void collectRecentProjects();
   void newProject();
 
   inline QString getFileName()
@@ -33,8 +32,11 @@ private slots:
 
   void on_openProject_clicked();
 
-private:
+  void on_recentList_clicked(const QModelIndex &index);
+
+  private:
   Ui::StartView* ui;
   QString fileName;
+  RecentViewModel* projects;
 };
 #endif // STARTVIEW_H

@@ -16,6 +16,7 @@ SOURCES += \
     Math/lineqsolver.cpp \
     Math/polynomialfinder.cpp \
   Models/functionstablemodel.cpp \
+    Models/recentviewmodel.cpp \
     Models/sheetviewmodel.cpp \
     Models/mainviewmodel.cpp \
   Models/thresholdstablemodel.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
     Math/lineqsolver.h \
     Math/polynomialfinder.h \
   Models/functionstablemodel.h \
+    Models/recentviewmodel.h \
     Models/sheetviewmodel.h \
     Models/mainviewmodel.h \
   Models/thresholdstablemodel.h \
@@ -70,6 +72,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    recent.json \
     testfile.json \
     testjson.json

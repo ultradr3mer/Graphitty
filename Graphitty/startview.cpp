@@ -1,7 +1,7 @@
 #include "startview.h"
 #include "ui_startview.h"
-#include <QFileDialog>
 
+#include <QFileDialog>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -10,6 +10,9 @@
 StartView::StartView(QWidget* parent) : QDialog(parent), ui(new Ui::StartView)
 {
   ui->setupUi(this);
+  this->projects = new RecentViewModel();
+  this->collectRecentProjects();
+  this->ui->recentList->setModel(this->projects);
 }
 
 StartView::~StartView()
@@ -17,12 +20,12 @@ StartView::~StartView()
   delete ui;
 }
 
-QJsonArray StartView::collectRecentProjects()
+void StartView::collectRecentProjects()
 {
     QString val;
     QFile file;
     QString fileName = "recent.json";
-    QJsonArray lastProjects = {};
+    QStringList recentProjects = {};
 
     file.setFileName(fileName);
 
@@ -37,28 +40,37 @@ QJsonArray StartView::collectRecentProjects()
         QJsonArray projects = values["projects"].toArray();
 
         if (!(projects.isEmpty())) {
-
-            // projects found
             foreach (const QJsonValue & project, projects) {
                 QString projectPath = project.toString();
 
                 fileName = projectPath;
                 if(QFileInfo::exists(fileName)) {
-                    lastProjects.append(projectPath);
+                    recentProjects.append(projectPath);
                 }
             }
         }
+    } else {
+        QJsonDocument* document = new QJsonDocument(QJsonArray());
+
+        auto projectList = QJsonObject({
+            qMakePair(QString("projects"), QJsonValue()),
+                           });
+        document->setObject(projectList);
+
+        file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
+        file.write(document->toJson());
+        file.close();
+        delete(document);
     }
 
-    return lastProjects;
+    std::reverse(recentProjects.begin(), recentProjects.end());
+    this->projects->setRecentFiles(recentProjects);
 
 }
 
 void StartView::on_newProject_clicked()
 {
-  //  auto* mainView = new MainView(this);
   this->close();
-  //  mainView->show();
 }
 
 void StartView::on_openProject_clicked()
@@ -67,12 +79,11 @@ void StartView::on_openProject_clicked()
       QFileDialog::getOpenFileName(this, tr("Open Project"), "/home", tr("Json Files (*.json)"));
 
   this->close();
-  //  MainView mainView;
-  //  mainView.openProject(fileName);
-  //  this->hide();
-  //  mainView.show();
 }
 
-
-
+void StartView::on_recentList_clicked(const QModelIndex &index)
+{
+  this->fileName = index.data(Qt::DisplayRole).toString();
+  this->close();
+}
 
