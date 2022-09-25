@@ -36,6 +36,7 @@ HEADERS += \
   Exceptions/DerivationException.h \
   Exceptions/derivationexception.h \
   Exceptions/functionparserexception.h \
+  Exceptions/invalichartdataexception.h \
   Exceptions/mathoperationexception.h \
   Exceptions/thresholdexception.h \
   Exceptions/variablenotdefinedexception.h \

@@ -1,4 +1,5 @@
 #include "mainview.h"
+#include "Exceptions/thresholdexception.h"
 #include "ui_mainview.h"
 
 #include <QFile>
@@ -16,6 +17,7 @@
 
 #include <Data/functiondata.h>
 #include <Exceptions/DerivationException.h>
+#include <Exceptions/invalichartdataexception.h>
 #include <IO/ioparser.h>
 
 MainView::MainView(QWidget* parent)
@@ -53,13 +55,27 @@ MainView::~MainView()
 void MainView::openProject(const QString& fileName)
 {
   QList<ChartData> loadedData = this->mIOParser.readProject(fileName);
-  this->model.setChartList(loadedData);
-  this->model.setActiveChart(0);
-  this->sheets->setSheetViews(this->model);
-  this->ui->sheetViews->setCurrentIndex(this->sheets->index(0));
-  this->addRecentProject();
-  this->readViewSettings();
-  this->safeInitializeChart();
+
+    try {
+      if(loadedData.isEmpty()) {
+            this->on_actionNeu_triggered();
+      } else {
+          this->model.setChartList(loadedData);
+          this->model.setActiveChart(0);
+          this->sheets->setSheetViews(this->model);
+          this->ui->sheetViews->setCurrentIndex(this->sheets->index(0));
+          this->addRecentProject();
+          this->readViewSettings();
+          this->safeInitializeChart();
+      }
+
+    }
+    catch(InvalidChartDataException e)
+    {
+        QMessageBox::information(this, "The program cannot load file data.", e.getMessage(),
+                                 QMessageBox::Ok);
+        this->on_actionNeu_triggered();
+    }
 }
 
 void MainView::initializeChart()
