@@ -2,7 +2,6 @@
 
 #include <QString>
 #include <algorithm>
-#include <iostream>
 
 #include <Exceptions/variablenotdefinedexception.h>
 using namespace std;
@@ -10,7 +9,6 @@ using namespace std;
 FunctionNode::FunctionNode()
     : operand1(NULL), operand2(NULL), inBrackets(false), varName(""), value(0.0)
 {
-  cout << "Test" << endl;
 }
 
 FunctionNode::FunctionNode(const FunctionNode& obj)
