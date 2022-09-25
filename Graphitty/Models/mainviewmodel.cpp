@@ -179,9 +179,28 @@ void MainViewModel::openPolyEdit(int row, QWidget* parent)
 
   QList<FunctionData>* entries = this->getChartData()->getFunctionData();
 
-  FunctionData data = entries->at(row);
+  bool isNew = row >= entries->length();
+
+  FunctionData data;
+  if (isNew)
+  {
+    data = FunctionData("", "", "", false);
+  }
+  else
+  {
+    data = entries->at(row);
+  }
+
   data.setDefinition(formula);
-  entries->replace(row, data);
+
+  if (isNew)
+  {
+    entries->append(data);
+  }
+  else
+  {
+    entries->replace(row, data);
+  }
 
   delete polyView;
 }
