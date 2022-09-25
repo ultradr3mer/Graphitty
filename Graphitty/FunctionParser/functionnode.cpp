@@ -159,8 +159,8 @@ string FunctionNode::toStrnig()
   {
     // Constant
     result = to_string(value);
-    result.erase(result.find_last_not_of('0') + 1, string::npos);
-    result.erase(result.find_last_not_of('.') + 1, string::npos);
+    result.erase(result.find_last_not_of("0") + 1, string::npos);
+    result.erase(result.find_last_not_of(".") + 1, string::npos);
   }
 
   return result;
