@@ -13,25 +13,25 @@ CONFIG += c++17
 
 SOURCES += \
     FunctionParser/functionnode.cpp \
+    IO/ioparser.cpp \
     Math/lineqsolver.cpp \
     Math/polynomialfinder.cpp \
-  Models/functionstablemodel.cpp \
+    Models/functionstablemodel.cpp \
     Models/recentviewmodel.cpp \
     Models/sheetviewmodel.cpp \
     Models/mainviewmodel.cpp \
-  Models/thresholdstablemodel.cpp \
+    Models/thresholdstablemodel.cpp \
     main.cpp \
     mainview.cpp \
     polyeditchartview.cpp \
     polyeditview.cpp \
-    sheetmanager.cpp \
     startview.cpp \
     viewarea.cpp
 
 HEADERS += \
   Data/chartdata.h \
-    Data/functiondata.h \
-    Data/functionstablemodel.h \
+  Data/functiondata.h \
+  Data/functionstablemodel.h \
   Data/thresholddata.h \
   Exceptions/DerivationException.h \
   Exceptions/derivationexception.h \
@@ -39,22 +39,22 @@ HEADERS += \
   Exceptions/mathoperationexception.h \
   Exceptions/thresholdexception.h \
   Exceptions/variablenotdefinedexception.h \
-    FunctionParser/functionnode.h \
-    FunctionParser/mathoperation.h \
-    FunctionParser/mathoperationexception.h \
-    Math/lineqsolver.h \
-    Math/polynomialfinder.h \
+  FunctionParser/functionnode.h \
+  FunctionParser/mathoperation.h \
+  FunctionParser/mathoperationexception.h \
+  IO/ioparser.h \
+  Math/lineqsolver.h \
+  Math/polynomialfinder.h \
   Models/functionstablemodel.h \
-    Models/recentviewmodel.h \
-    Models/sheetviewmodel.h \
-    Models/mainviewmodel.h \
+  Models/recentviewmodel.h \
+  Models/sheetviewmodel.h \
+  Models/mainviewmodel.h \
   Models/thresholdstablemodel.h \
-    mainview.h \
-    polyeditchartview.h \
-    polyeditview.h \
-    sheetmanager.h \
-    startview.h \
-    viewarea.h
+  mainview.h \
+  polyeditchartview.h \
+  polyeditview.h \
+  startview.h \
+  viewarea.h
 
 FORMS += \
     mainview.ui \

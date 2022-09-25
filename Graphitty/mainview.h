@@ -12,7 +12,7 @@
 #include "FunctionParser/functionnode.h"
 #include "Models/mainviewmodel.h"
 #include "Models/sheetviewmodel.h"
-#include "sheetmanager.h"
+#include "IO/ioparser.h"
 
 namespace Ui
 {
@@ -50,7 +50,7 @@ private:
   bool mImported = false;
   FunctionNode mCalculation;
   FunctionNode mOtherCalculation;
-  SheetManager mSheetManager;
+  IOParser mIOParser;
   int mFromCalc = 0;
   int mToCalc = 7;
   void setSeries();

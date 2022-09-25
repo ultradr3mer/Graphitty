@@ -16,7 +16,7 @@
 
 #include <Data/functiondata.h>
 #include <Exceptions/DerivationException.h>
-#include <sheetmanager.h>
+#include <IO/ioparser.h>
 
 MainView::MainView(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainView), model(MainViewModel())
@@ -28,7 +28,7 @@ MainView::MainView(QWidget* parent)
   this->model = MainViewModel();
   this->sheets = new SheetViewModel();
   this->sheets->setSheetViews(this->model);
-  this->mSheetManager = SheetManager();
+  this->mIOParser = IOParser();
 
   functionstableModel = new FunctionsTableModel();
   functionstableModel->setFunctionData(this->model.getChartData()->getFunctionData());
@@ -51,7 +51,7 @@ MainView::~MainView()
 
 void MainView::openProject(const QString& fileName)
 {
-  QList<ChartData> loadedData = this->mSheetManager.readProject(fileName);
+  QList<ChartData> loadedData = this->mIOParser.readProject(fileName);
   this->model.setChartList(loadedData);
   this->model.setActiveChart(0);
   this->sheets->setSheetViews(this->model);
@@ -185,12 +185,12 @@ void MainView::addRecentProject()
 
     foreach (const QJsonValue& project, projects)
     {
-        if (project.toString() != this->mSheetManager.GetProjectPath()) {
+        if (project.toString() != this->mIOParser.GetProjectPath()) {
             newProjectList.append(project.toString());
         }
     }
 
-    newProjectList.append(this->mSheetManager.GetProjectPath());
+    newProjectList.append(this->mIOParser.GetProjectPath());
 
     auto recentProjects = QJsonObject({
         qMakePair(QString("projects"), newProjectList),
@@ -253,17 +253,17 @@ void MainView::on_actionSpeichern_unter_triggered()
   this->saveCurrentChartData();
   auto fileName =
       QFileDialog::getSaveFileName(this, tr("Save Project to"), "/home", tr("Json Files (*.json)"));
-  this->mSheetManager.saveProjectToFile(this->model.getChartList(), fileName);
+  this->mIOParser.saveProjectToFile(this->model.getChartList(), fileName);
   this->addRecentProject();
 }
 
 void MainView::on_actionSpeichern_triggered()
 {
   this->saveCurrentChartData();
-  if (this->mSheetManager.checkForExistingProject())
+  if (this->mIOParser.checkForExistingProject())
   {
-    this->mSheetManager.saveProjectToFile(this->model.getChartList(),
-                                          this->mSheetManager.GetProjectPath());
+    this->mIOParser.saveProjectToFile(this->model.getChartList(),
+                                          this->mIOParser.GetProjectPath());
   }
   else
   {
