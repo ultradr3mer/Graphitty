@@ -2,8 +2,6 @@
 #include "Models/mainviewmodel.h"
 #include "Data/chartdata.h"
 
-QStringList testData = {"Letter", "Name", "Definition", "Show"};
-
 SheetViewModel::SheetViewModel(QObject* parent) : QStringListModel(parent)
 {}
 

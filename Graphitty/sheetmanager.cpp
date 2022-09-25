@@ -62,6 +62,7 @@ void SheetManager::saveProjectToFile(QList<ChartData> charts, const QString& fil
   file.close();
 
   this->mProjectPath = filePath;
+  delete(document);
 }
 
 QList<ChartData> SheetManager::convertSheetsToChart(QJsonValue sheets)
