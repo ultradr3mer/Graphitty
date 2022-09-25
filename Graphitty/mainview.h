@@ -34,7 +34,6 @@ private slots:
   void on_actionSpeichern_triggered();
   void on_actionProjektmappe_schlie_en_triggered();
   void on_update_clicked();
-  void on_tableWidget_cellActivated(int row, int column);
   void on_viewAdd_clicked();
   void on_viewDelete_clicked();
   void on_viewRename_clicked();

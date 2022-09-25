@@ -287,10 +287,6 @@ void MainView::on_update_clicked()
   this->safeInitializeChart();
 }
 
-void MainView::on_tableWidget_cellActivated(int row, int column)
-{
-}
-
 // adds new view to project
 void MainView::on_viewAdd_clicked()
 {
