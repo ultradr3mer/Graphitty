@@ -1,3 +1,10 @@
+/***************************************************************************
+ * SoSe2022 Praktikum C++ für JAVA Programmierer
+ * Graphitty
+ * Gruppe: Schulz-Theißen Clara, Ahrens Pascal, Jaenisch Lukas
+ * Datum: 25.09.22
+ **************************************************************************/
+
 #include "mainviewmodel.h"
 #include "qregularexpression.h"
 #include <Data/functiondata.h>
@@ -88,18 +95,18 @@ ChartData initializeDefaultChartData2()
 
 MainViewModel::MainViewModel()
 {
-    this->initializeDefaultData();
+  this->initializeDefaultData();
 }
 
 void MainViewModel::initializeDefaultData()
 {
-    QList<ChartData> defaultList;
-    auto defaultData = initializeDefaultChartData();
-    defaultList.append(defaultData);
-    auto defaultData2 = initializeDefaultChartData2();
-    defaultList.append(defaultData2);
-    this->setChartList(defaultList);
-    this->setChartData(defaultData);
+  QList<ChartData> defaultList;
+  auto defaultData = initializeDefaultChartData();
+  defaultList.append(defaultData);
+  auto defaultData2 = initializeDefaultChartData2();
+  defaultList.append(defaultData2);
+  this->setChartList(defaultList);
+  this->setChartData(defaultData);
 }
 
 void MainViewModel::appendNewDefaultData()

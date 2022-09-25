@@ -1,3 +1,10 @@
+/***************************************************************************
+ * SoSe2022 Praktikum C++ für JAVA Programmierer
+ * Graphitty
+ * Gruppe: Schulz-Theißen Clara, Ahrens Pascal, Jaenisch Lukas
+ * Datum: 25.09.22
+ **************************************************************************/
+
 #ifndef STARTVIEW_H
 #define STARTVIEW_H
 
@@ -32,9 +39,9 @@ private slots:
 
   void on_openProject_clicked();
 
-  void on_recentList_clicked(const QModelIndex &index);
+  void on_recentList_clicked(const QModelIndex& index);
 
-  private:
+private:
   Ui::StartView* ui;
   QString fileName;
   RecentViewModel* projects;

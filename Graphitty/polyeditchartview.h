@@ -1,5 +1,9 @@
-// Copyright (C) 2016 The Qt Company Ltd.
-// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
+/***************************************************************************
+ * SoSe2022 Praktikum C++ für JAVA Programmierer
+ * Graphitty
+ * Gruppe: Schulz-Theißen Clara, Ahrens Pascal, Jaenisch Lukas
+ * Datum: 25.09.22
+ **************************************************************************/
 
 #ifndef CHARTVIEW_H
 #define CHARTVIEW_H

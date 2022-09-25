@@ -1,3 +1,10 @@
+/***************************************************************************
+ * SoSe2022 Praktikum C++ für JAVA Programmierer
+ * Graphitty
+ * Gruppe: Schulz-Theißen Clara, Ahrens Pascal, Jaenisch Lukas
+ * Datum: 25.09.22
+ **************************************************************************/
+
 #ifndef VIEWDATA_H
 #define VIEWDATA_H
 
@@ -17,7 +24,7 @@ public:
 
   inline bool getIsChartInverted()
   {
-      return this->isChartInverted;
+    return this->isChartInverted;
   }
   inline void setIsChartInverted(bool value)
   {
@@ -26,11 +33,11 @@ public:
 
   inline QString getName()
   {
-      return this->name;
+    return this->name;
   }
   inline void setName(QString value)
   {
-      this->name = value;
+    this->name = value;
   }
 
   inline ViewArea* getViewArea()

@@ -1,3 +1,10 @@
+/***************************************************************************
+ * SoSe2022 Praktikum C++ für JAVA Programmierer
+ * Graphitty
+ * Gruppe: Schulz-Theißen Clara, Ahrens Pascal, Jaenisch Lukas
+ * Datum: 25.09.22
+ **************************************************************************/
+
 #ifndef POLYEDITVIEW_H
 #define POLYEDITVIEW_H
 
@@ -22,7 +29,7 @@ public:
   void handlePointMove(const QPoint& point);
   void handleMousePress(const QPoint& point);
   void setPointClicked(bool clicked);
-  void initialize(ViewArea &viewArea);
+  void initialize(ViewArea& viewArea);
   ~PolyEditView();
 
   inline QString getFormula()

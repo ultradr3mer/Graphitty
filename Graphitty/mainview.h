@@ -1,3 +1,10 @@
+/***************************************************************************
+ * SoSe2022 Praktikum C++ für JAVA Programmierer
+ * Graphitty
+ * Gruppe: Schulz-Theißen Clara, Ahrens Pascal, Jaenisch Lukas
+ * Datum: 25.09.22
+ **************************************************************************/
+
 #ifndef MAINVIEW_H
 #define MAINVIEW_H
 
@@ -10,9 +17,9 @@
 #include <Models/thresholdstablemodel.h>
 
 #include "FunctionParser/functionnode.h"
+#include "IO/ioparser.h"
 #include "Models/mainviewmodel.h"
 #include "Models/sheetviewmodel.h"
-#include "IO/ioparser.h"
 
 namespace Ui
 {
@@ -43,7 +50,7 @@ private slots:
 
   void on_actionOpen_triggered();
 
-  private:
+private:
   Ui::MainView* ui;
   void initializeChart();
   void safeInitializeChart();

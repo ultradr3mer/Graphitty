@@ -1,3 +1,10 @@
+/***************************************************************************
+ * SoSe2022 Praktikum C++ für JAVA Programmierer
+ * Graphitty
+ * Gruppe: Schulz-Theißen Clara, Ahrens Pascal, Jaenisch Lukas
+ * Datum: 25.09.22
+ **************************************************************************/
+
 #ifndef MAINVIEWMODEL_H
 #define MAINVIEWMODEL_H
 
@@ -51,7 +58,7 @@ public:
   {
     return this->activeChartIndex;
   }
-  void generateAllSeries(QList<QLineSeries *> &seriesInLegend, QList<QLineSeries *> &series);
+  void generateAllSeries(QList<QLineSeries*>& seriesInLegend, QList<QLineSeries*>& series);
   void openPolyEdit(int row, QWidget* parent);
   void initializeDefaultData();
   void appendNewDefaultData();

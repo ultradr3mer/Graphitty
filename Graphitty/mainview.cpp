@@ -1,3 +1,10 @@
+/***************************************************************************
+ * SoSe2022 Praktikum C++ für JAVA Programmierer
+ * Graphitty
+ * Gruppe: Schulz-Theißen Clara, Ahrens Pascal, Jaenisch Lukas
+ * Datum: 25.09.22
+ **************************************************************************/
+
 #include "mainview.h"
 #include "Exceptions/thresholdexception.h"
 #include "ui_mainview.h"
@@ -56,26 +63,29 @@ void MainView::openProject(const QString& fileName)
 {
   QList<ChartData> loadedData = this->mIOParser.readProject(fileName);
 
-    try {
-      if(loadedData.isEmpty()) {
-            this->on_actionNeu_triggered();
-      } else {
-          this->model.setChartList(loadedData);
-          this->model.setActiveChart(0);
-          this->sheets->setSheetViews(this->model);
-          this->ui->sheetViews->setCurrentIndex(this->sheets->index(0));
-          this->addRecentProject();
-          this->readViewSettings();
-          this->safeInitializeChart();
-      }
-
-    }
-    catch(InvalidChartDataException e)
+  try
+  {
+    if (loadedData.isEmpty())
     {
-        QMessageBox::information(this, "The program cannot load file data.", e.getMessage(),
-                                 QMessageBox::Ok);
-        this->on_actionNeu_triggered();
+      this->on_actionNeu_triggered();
     }
+    else
+    {
+      this->model.setChartList(loadedData);
+      this->model.setActiveChart(0);
+      this->sheets->setSheetViews(this->model);
+      this->ui->sheetViews->setCurrentIndex(this->sheets->index(0));
+      this->addRecentProject();
+      this->readViewSettings();
+      this->safeInitializeChart();
+    }
+  }
+  catch (InvalidChartDataException e)
+  {
+    QMessageBox::information(this, "The program cannot load file data.", e.getMessage(),
+                             QMessageBox::Ok);
+    this->on_actionNeu_triggered();
+  }
 }
 
 void MainView::initializeChart()
@@ -203,9 +213,10 @@ void MainView::addRecentProject()
 
     foreach (const QJsonValue& project, projects)
     {
-        if (project.toString() != this->mIOParser.getProjectPath()) {
-            newProjectList.append(project.toString());
-        }
+      if (project.toString() != this->mIOParser.getProjectPath())
+      {
+        newProjectList.append(project.toString());
+      }
     }
 
     newProjectList.append(this->mIOParser.getProjectPath());
@@ -283,8 +294,7 @@ void MainView::on_actionSpeichern_triggered()
   this->saveCurrentChartData();
   if (this->mIOParser.checkForExistingProject())
   {
-    this->mIOParser.saveProjectToFile(this->model.getChartList(),
-                                          this->mIOParser.getProjectPath());
+    this->mIOParser.saveProjectToFile(this->model.getChartList(), this->mIOParser.getProjectPath());
   }
   else
   {
@@ -294,7 +304,7 @@ void MainView::on_actionSpeichern_triggered()
 
 void MainView::on_actionProjektmappe_schlie_en_triggered()
 {
-    exit(0);
+  exit(0);
 }
 
 // updates view output
@@ -336,14 +346,16 @@ void MainView::on_viewDelete_clicked()
     this->sheets->removeRows(row, 1);
     this->model.removeChart(row);
     this->switchCurrentChartData(0);
-  } else {
-      QMessageBox msgBox;
-      msgBox.setText("Last view cannot be deleted.");
-      msgBox.setInformativeText("Either create a new one first or edit the last one to your needs.");
-      msgBox.setStandardButtons(QMessageBox::Ok);
-      msgBox.setDefaultButton(QMessageBox::Ok);
-      msgBox.exec();
-      return;
+  }
+  else
+  {
+    QMessageBox msgBox;
+    msgBox.setText("Last view cannot be deleted.");
+    msgBox.setInformativeText("Either create a new one first or edit the last one to your needs.");
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    msgBox.exec();
+    return;
   }
 }
 
@@ -357,17 +369,16 @@ void MainView::on_sheetViews_clicked(const QModelIndex& index)
 
 void MainView::on_actionNeu_triggered()
 {
-    this->mIOParser.setProjectPath(NULL);
-    this->model.initializeDefaultData();
-    this->sheets->setSheetViews(this->model);
-    this->ui->sheetViews->setCurrentIndex(this->sheets->index(0));
-    this->switchCurrentChartData(0);
+  this->mIOParser.setProjectPath(NULL);
+  this->model.initializeDefaultData();
+  this->sheets->setSheetViews(this->model);
+  this->ui->sheetViews->setCurrentIndex(this->sheets->index(0));
+  this->switchCurrentChartData(0);
 }
-
 
 void MainView::on_actionOpen_triggered()
 {
-    QString openFile = QFileDialog::getOpenFileName(this, tr("Open Project"), "/home", tr("Json Files (*.json)"));
-    this->openProject(openFile);
+  QString openFile =
+      QFileDialog::getOpenFileName(this, tr("Open Project"), "/home", tr("Json Files (*.json)"));
+  this->openProject(openFile);
 }
-

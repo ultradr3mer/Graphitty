@@ -1,8 +1,15 @@
+/***************************************************************************
+ * SoSe2022 Praktikum C++ für JAVA Programmierer
+ * Graphitty
+ * Gruppe: Schulz-Theißen Clara, Ahrens Pascal, Jaenisch Lukas
+ * Datum: 25.09.22
+ **************************************************************************/
+
 #ifndef VIEWAREA_H
 #define VIEWAREA_H
 
-#include <QPointF>
 #include <QJsonArray>
+#include <QPointF>
 
 class ViewArea
 {
@@ -42,7 +49,7 @@ public:
 
   inline QJsonArray getViewpoints()
   {
-      return {mFromX, mToX,  mFromY, mToY};
+    return {mFromX, mToX, mFromY, mToY};
   }
 
   bool isInside(QPointF point);
