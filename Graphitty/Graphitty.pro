@@ -32,6 +32,7 @@ HEADERS += \
     Data/functiondata.h \
     Data/functionstablemodel.h \
   Data/thresholddata.h \
+  Exceptions/DerivationException.h \
   Exceptions/derivationexception.h \
   Exceptions/functionparserexception.h \
   Exceptions/mathoperationexception.h \

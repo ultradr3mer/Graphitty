@@ -1,7 +1,7 @@
 #ifndef VARIABLENOTDEFINEDEXCEPTION_H
 #define VARIABLENOTDEFINEDEXCEPTION_H
 
-#include "FunctionParserException.h"
+#include "functionparserexception.h"
 
 class VariableNotDefinedException : public FunctionParserException
 {

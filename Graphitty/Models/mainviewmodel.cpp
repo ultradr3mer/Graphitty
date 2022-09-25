@@ -1,7 +1,7 @@
 #include "mainviewmodel.h"
 #include "qregularexpression.h"
 #include <Data/functiondata.h>
-#include <Exceptions/derivationexception.h>
+#include <Exceptions/DerivationException.h>
 #include <QString>
 #include <polyeditview.h>
 

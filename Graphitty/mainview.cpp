@@ -15,7 +15,7 @@
 #include <qvalueaxis.h>
 
 #include <Data/functiondata.h>
-#include <Exceptions/derivationexception.h>
+#include <Exceptions/DerivationException.h>
 #include <sheetmanager.h>
 
 MainView::MainView(QWidget* parent)
